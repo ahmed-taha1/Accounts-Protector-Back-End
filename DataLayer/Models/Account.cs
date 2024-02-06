@@ -13,11 +13,12 @@ namespace DataLayer.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [StringLength(100)]
         public string? AccountName { get; set; }
         [Required]
+        [ForeignKey(nameof(Platform))]
         public int PlatformId { get; set; }
         public virtual Platform? Platform { get; set; }
-        [ForeignKey(nameof(PlatformId))]
         public virtual List<AccountAttribute>? AccountAttributes { get; set; }
     }
 }

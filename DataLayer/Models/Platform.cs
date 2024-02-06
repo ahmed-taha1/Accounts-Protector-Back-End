@@ -8,10 +8,13 @@ namespace DataLayer.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [StringLength(100)]
         public string? PlatformName { get; set; }
         [Required]
+        [ForeignKey(nameof(User))]
+
         public string? UserId { get; set; }
-        [ForeignKey(nameof(UserId))]
         public virtual User? User { get; set; }
+        public virtual ICollection<Account>? Accounts { get; set; }
     }
 }
