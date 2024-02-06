@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountsProtector", "AccountsProtector\AccountsProtector.csproj", "{1637502F-DDC0-46DB-8C67-1E8019B2FB8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountsProtector", "AccountsProtector\AccountsProtector.csproj", "{1637502F-DDC0-46DB-8C67-1E8019B2FB8D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer", "DataLayer\DataLayer.csproj", "{F3BD9D9D-1E9F-4C15-BEEE-2F9209AC72AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLayer", "ServiceLayer\ServiceLayer.csproj", "{27FE8D08-33E0-460A-8861-F945BFBD96D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{1637502F-DDC0-46DB-8C67-1E8019B2FB8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1637502F-DDC0-46DB-8C67-1E8019B2FB8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1637502F-DDC0-46DB-8C67-1E8019B2FB8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3BD9D9D-1E9F-4C15-BEEE-2F9209AC72AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3BD9D9D-1E9F-4C15-BEEE-2F9209AC72AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3BD9D9D-1E9F-4C15-BEEE-2F9209AC72AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3BD9D9D-1E9F-4C15-BEEE-2F9209AC72AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27FE8D08-33E0-460A-8861-F945BFBD96D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27FE8D08-33E0-460A-8861-F945BFBD96D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27FE8D08-33E0-460A-8861-F945BFBD96D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27FE8D08-33E0-460A-8861-F945BFBD96D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
