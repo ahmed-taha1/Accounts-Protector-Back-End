@@ -19,10 +19,10 @@ namespace ServicesLayer.UserService
         }
         public async Task<IdentityResult> Register(User user, string password)
         {
-            if (await FindUserByEmail(user.Email) != null)
-            {
-                throw new Exception("User email already exists");
-            }
+            // if (await FindUserByEmail(user.Email) != null)
+            // {
+            //     throw new Exception("User email already exists");
+            // }
             IdentityResult result = await _dp.Users.CreateAsync(user, password);
             await _dp.SaveAsync();
             return result;

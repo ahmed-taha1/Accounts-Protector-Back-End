@@ -22,29 +22,43 @@ namespace AccountsProtector.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] DTORegisterUser request)
         {
+            // validating model
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid data");
+                List<string> errors = new List<string>();
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        errors.Add(error.ErrorMessage);
+                    }
+                }
+                return BadRequest(errors);
             }
+
             User user = new User
             {
-                UserName = request.Name,
+                PersonName = request.PersonName,
+                UserName = request.Email,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
             };
-            try
+
+            IdentityResult result = await _userService.Register(user, request.Password);
+
+            // if registration failed
+            if (!result.Succeeded)
             {
-                IdentityResult result = await _userService.Register(user, request.Password);
-                if (!result.Succeeded)
+                List<string> errors = new List<string>();
+                foreach (var error in result.Errors)
                 {
-                    return BadRequest("Invalid data");
+                    errors.Add(error.Description);
                 }
+                return BadRequest(errors);
             }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-            return Ok("User created successfully");
+
+            // if registration succeeded
+            return Ok(StatusCode(StatusCodes.Status201Created, user.Id));
         }
     }
 }

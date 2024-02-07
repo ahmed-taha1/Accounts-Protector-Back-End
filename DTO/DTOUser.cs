@@ -9,25 +9,29 @@ namespace DataLayer.DTO
 {
     public class DTORegisterUser
     {
-        [Required]
-        public string? Name { get; set; }
-        [Required]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Email is required")]
+        [DataType(DataType.EmailAddress, ErrorMessage = "invalid email")]
         public string? Email { get; set; }
-        [DataType(DataType.Password)]
-        [Required]
+
+        [Required(ErrorMessage = "Name is required")]
+        [MaxLength(100, ErrorMessage = "Name Should be less than 100 char")]
+        public string? PersonName { get; set; }
+
+        [DataType(DataType.Password, ErrorMessage = "invalid password")]
+        [Required(ErrorMessage = "password is required")]
         public string? Password { get; set; }
-        [DataType(DataType.PhoneNumber)]
+
+        [DataType(DataType.PhoneNumber, ErrorMessage = "invalid phone number")]
         public string? PhoneNumber { get; set; }
     }
 
     public class DTOUserLogin
     {
-        [Required]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Email is required")]
+        [DataType(DataType.EmailAddress, ErrorMessage = "invalid email")]
         public string? Email { get; set; }
-        [DataType(DataType.Password)]
-        [Required]
+        [DataType(DataType.Password, ErrorMessage = "invalid password")]
+        [Required(ErrorMessage = "password is required")]
         public string? Password { get; set; }
     }
 }
