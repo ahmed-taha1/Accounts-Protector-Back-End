@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DataLayer.Models
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<Guid>
     {
         public virtual List<Platform>? Platforms { get; set; }
     }

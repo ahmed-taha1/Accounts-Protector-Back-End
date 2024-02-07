@@ -8,5 +8,6 @@ namespace ServiceLayer.AccountsService
 {
     public interface IAccountsService
     {
+        public Task<bool> Register();
     }
 }
