@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DataLayer.DTO
 {
@@ -11,6 +12,7 @@ namespace DataLayer.DTO
     {
         [Required(ErrorMessage = "Email is required")]
         [DataType(DataType.EmailAddress, ErrorMessage = "invalid email")]
+        [Remote(action: "IsEmailIsAlreadyRegistered", controller: "UserController", ErrorMessage = "Email is already registered before")]
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
@@ -24,7 +26,7 @@ namespace DataLayer.DTO
         [DataType(DataType.PhoneNumber, ErrorMessage = "invalid phone number")]
         public string? PhoneNumber { get; set; }
     }
-
+    
     public class DTOUserLogin
     {
         [Required(ErrorMessage = "Email is required")]

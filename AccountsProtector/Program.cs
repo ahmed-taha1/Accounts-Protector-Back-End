@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>
             ("myConnectionString")));
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders()
     .AddUserStore<UserStore<User, IdentityRole<Guid>, AppDbContext, Guid>>()
     .AddRoleStore<RoleStore<IdentityRole<Guid>, AppDbContext, Guid>>();
 

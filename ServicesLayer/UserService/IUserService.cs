@@ -12,5 +12,6 @@ namespace ServicesLayer.UserService
     {
         Task<IdentityResult> Register(User user, string password);
         Task<User>? FindUserByEmail(string email);
+        Task<bool> IsEmailIsAlreadyRegistered(string email);
     }
 }

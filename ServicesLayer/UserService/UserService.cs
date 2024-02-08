@@ -32,5 +32,10 @@ namespace ServicesLayer.UserService
         {
             return await _dp.Users.FindByEmailAsync(email);
         }
+
+        public async Task<bool> IsEmailIsAlreadyRegistered(string email)
+        {
+            return await _dp.Users.FindByEmailAsync(email) == null;
+        }
     }
 }

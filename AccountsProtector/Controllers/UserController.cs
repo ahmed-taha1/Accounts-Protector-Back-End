@@ -8,7 +8,7 @@ using ServicesLayer.UserService;
 
 namespace AccountsProtector.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -59,6 +59,12 @@ namespace AccountsProtector.Controllers
 
             // if registration succeeded
             return Ok(StatusCode(StatusCodes.Status201Created, user.Id));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)
+        {
+            return Ok(await _userService.IsEmailIsAlreadyRegistered(email));
         }
     }
 }
