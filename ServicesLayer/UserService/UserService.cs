@@ -19,16 +19,17 @@ namespace ServicesLayer.UserService
         }
         public async Task<IdentityResult> Register(User user, string password)
         {
-            // if (await FindUserByEmail(user.Email) != null)
-            // {
-            //     throw new Exception("User email already exists");
-            // }
             IdentityResult result = await _dp.Users.CreateAsync(user, password);
             await _dp.SaveAsync();
             return result;
         }
+        public async Task<bool> Login(User user, string password)
+        {
+            SignInResult result = await _dp.SignInManager.PasswordSignInAsync(user.Email, password, isPersistent:true, lockoutOnFailure: false);
+            return result.Succeeded;
+        }
 
-        public async Task<User>? FindUserByEmail(string email)
+        public async Task<User>? GetUserByEmail(string email)
         {
             return await _dp.Users.FindByEmailAsync(email);
         }

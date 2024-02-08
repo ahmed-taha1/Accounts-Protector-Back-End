@@ -27,7 +27,7 @@ namespace DataLayer.DTO
         public string? PhoneNumber { get; set; }
     }
     
-    public class DTOUserLogin
+    public class DTOUserLoginRequest
     {
         [Required(ErrorMessage = "Email is required")]
         [DataType(DataType.EmailAddress, ErrorMessage = "invalid email")]
@@ -35,5 +35,13 @@ namespace DataLayer.DTO
         [DataType(DataType.Password, ErrorMessage = "invalid password")]
         [Required(ErrorMessage = "password is required")]
         public string? Password { get; set; }
+    }
+
+    public class DTOUserLoginResponse
+    {
+        public string? Token { get; set; } = string.Empty;
+        public string? Email { get; set; } = string.Empty;
+        public string? PersonName { get; set; } = string.Empty;
+        public DateTime? Expiration { get; set; }
     }
 }

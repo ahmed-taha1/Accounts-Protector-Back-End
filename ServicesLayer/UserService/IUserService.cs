@@ -11,7 +11,8 @@ namespace ServicesLayer.UserService
     public interface IUserService
     {
         Task<IdentityResult> Register(User user, string password);
-        Task<User>? FindUserByEmail(string email);
+        Task<bool> Login(User user, string password);
+        Task<User>? GetUserByEmail(string email);
         Task<bool> IsEmailIsAlreadyRegistered(string email);
     }
 }
