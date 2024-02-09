@@ -1,9 +1,11 @@
 using DataAccessLayer.UnitOfWork;
 using DataLayer.DataBase;
 using DataLayer.Models;
-using DataLayer.Repository;
+using AccountsProtector.Extentions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ServicesLayer.JwtService;
 using ServicesLayer.UserService;
@@ -30,10 +32,26 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IJwtService, JwtService>();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+builder.Services.AddAuthorization(op => {});
+
+builder.Services.AddControllers(op =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    op.Filters.Add(new AuthorizeFilter(policy));
+}).AddXmlSerializerFormatters();
+
+// Add Jwt Auth
+builder.Services.AddCustomJwtAuth(builder.Configuration);
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Add Swagger with custom configuration to support authorization
+builder.Services.AddCustomSwaggerConfiguration();
+
 
 var app = builder.Build();
 
@@ -46,6 +64,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

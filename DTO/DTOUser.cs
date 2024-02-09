@@ -44,4 +44,12 @@ namespace DataLayer.DTO
         public string? PersonName { get; set; } = string.Empty;
         public DateTime? Expiration { get; set; }
     }
+
+    public class DTOUserChangePassword
+    {
+        [Required(ErrorMessage = "Old password is required")]
+        public string? OldPassword { get; set; }
+        [Required(ErrorMessage = "New password is required")]
+        public string? NewPassword { get; set; }
+    }
 }

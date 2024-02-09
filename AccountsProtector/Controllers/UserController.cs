@@ -1,11 +1,16 @@
-﻿using DataLayer.DTO;
+﻿using System.Drawing;
+using DataLayer.DTO;
 using DataLayer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using ServicesLayer.JwtService;
 using ServicesLayer.UserService;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace AccountsProtector.Controllers
 {
@@ -14,12 +19,15 @@ namespace AccountsProtector.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IJwtService _jwtService;
+        public UserController(IUserService userService, IJwtService jwtService)
         {
             _userService = userService;
+            _jwtService = jwtService;
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] DTORegisterUser request)
         {
             // validating model
@@ -62,7 +70,8 @@ namespace AccountsProtector.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] DTOUserLoginRequest request, [FromServices] IJwtService jwtService, [FromServices] IConfiguration configuration)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] DTOUserLoginRequest request, [FromServices] IConfiguration configuration)
         {
             if (!ModelState.IsValid)
             {
@@ -84,14 +93,14 @@ namespace AccountsProtector.Controllers
                 return BadRequest("Invalid email or password");
             }
 
-            if (!await _userService.Login(user, request.Password))
+            if (!await _userService.Login(user.Email, request.Password))
             {
                 return BadRequest("Invalid email or password");
             }
 
             DTOUserLoginResponse response = new DTOUserLoginResponse
             {
-                Token = jwtService.GenerateToken(user),
+                Token = _jwtService.GenerateToken(user),
                 Email = user.Email,
                 PersonName = user.PersonName,
                 Expiration = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration["JWT:EXPIRY_IN_DAYS"]))
@@ -99,10 +108,51 @@ namespace AccountsProtector.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword([FromBody] DTOUserChangePassword request)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<string> errors = new List<string>();
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        errors.Add(error.ErrorMessage);
+                    }
+                }
+                return BadRequest(errors);
+            }
+
+            var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            string token = authorizationHeader.Split(' ').LastOrDefault();
+            string email = _jwtService.GetEmailFromToken(token);
+            if (!string.IsNullOrEmpty(email))
+            {
+                return BadRequest("Invalid Data");
+            }
+            bool result = await _userService.UpdatePassword(request.OldPassword, request.NewPassword, email);
+            if (!result)
+            {
+                return BadRequest("Invalid Data");
+
+            }
+            return Ok("Password Changed Successfully");
+        }
+
+
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)
         {
-            return Ok(await _userService.IsEmailIsAlreadyRegistered(email));
+            return Ok(await _userService.GetUserByEmail(email) == null);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ValidateToken(string token, [FromServices] IJwtService jwtService)
+        {
+            return Ok(jwtService.ValidateToken(token));
         }
     }
 }

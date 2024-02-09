@@ -23,9 +23,9 @@ namespace ServicesLayer.UserService
             await _dp.SaveAsync();
             return result;
         }
-        public async Task<bool> Login(User user, string password)
+        public async Task<bool> Login(string email, string password)
         {
-            SignInResult result = await _dp.SignInManager.PasswordSignInAsync(user.Email, password, isPersistent:true, lockoutOnFailure: false);
+            SignInResult result = await _dp.SignInManager.PasswordSignInAsync(email, password, isPersistent:true, lockoutOnFailure: false);
             return result.Succeeded;
         }
 
@@ -34,9 +34,16 @@ namespace ServicesLayer.UserService
             return await _dp.Users.FindByEmailAsync(email);
         }
 
-        public async Task<bool> IsEmailIsAlreadyRegistered(string email)
+        public async Task<bool> UpdatePassword(string oldPassword, string newPassword, string email)
         {
-            return await _dp.Users.FindByEmailAsync(email) == null;
+            User user = await _dp.Users.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return false;
+            }
+            var result = await _dp.Users.ChangePasswordAsync(user, oldPassword, newPassword);
+            await _dp.SaveAsync();
+            return result.Succeeded;
         }
     }
 }

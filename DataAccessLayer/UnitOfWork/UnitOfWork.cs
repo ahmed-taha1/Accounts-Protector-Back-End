@@ -18,9 +18,7 @@ namespace DataAccessLayer.UnitOfWork
         public UserManager<User> Users { get; private set; }
         public IRepository<AccountAttribute> AccountAttributes { get; }
         public IRepository<Platform> Platforms { get; }
-
         public SignInManager<User> SignInManager { get; }
-
         public UnitOfWork(AppDbContext dp, UserManager<User> users, SignInManager<User> signInManager)
         {
             _dp = dp;
