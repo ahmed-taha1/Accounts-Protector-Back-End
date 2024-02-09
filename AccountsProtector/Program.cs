@@ -36,6 +36,7 @@ builder.Services.AddTransient<IJwtService, JwtService>();
 
 builder.Services.AddAuthorization(op => {});
 
+// authorization filter
 builder.Services.AddControllers(op =>
 {
     var policy = new AuthorizationPolicyBuilder()

@@ -8,6 +8,8 @@ namespace AccountsProtector.Extentions
         {
             services.AddSwaggerGen(op =>
             {
+                // change the swagger version and name
+
                 op.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Name = "Authorization",

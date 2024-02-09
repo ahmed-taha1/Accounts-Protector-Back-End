@@ -1,16 +1,10 @@
-﻿using System.Drawing;
-using DataLayer.DTO;
+﻿using DataLayer.DTO;
 using DataLayer.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using Microsoft.IdentityModel.Tokens;
 using ServicesLayer.JwtService;
 using ServicesLayer.UserService;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace AccountsProtector.Controllers
 {
@@ -88,12 +82,7 @@ namespace AccountsProtector.Controllers
 
             User? user = await _userService.GetUserByEmail(request.Email);
 
-            if (user == null)
-            {
-                return BadRequest("Invalid email or password");
-            }
-
-            if (!await _userService.Login(user.Email, request.Password))
+            if (user == null || !await _userService.Login(user.Email, request.Password))
             {
                 return BadRequest("Invalid email or password");
             }
@@ -108,7 +97,9 @@ namespace AccountsProtector.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
+        // BUG fix me
+        // TODO fix meeeeeeeeeeeeeeeeeee
+        [HttpPut]
         public async Task<IActionResult> ChangePassword([FromBody] DTOUserChangePassword request)
         {
             if (!ModelState.IsValid)
@@ -127,12 +118,8 @@ namespace AccountsProtector.Controllers
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             string token = authorizationHeader.Split(' ').LastOrDefault();
             string email = _jwtService.GetEmailFromToken(token);
-            if (!string.IsNullOrEmpty(email))
-            {
-                return BadRequest("Invalid Data");
-            }
-            bool result = await _userService.UpdatePassword(request.OldPassword, request.NewPassword, email);
-            if (!result)
+            
+            if (email == null || !await _userService.UpdatePassword(request.OldPassword, request.NewPassword, email))
             {
                 return BadRequest("Invalid Data");
 
