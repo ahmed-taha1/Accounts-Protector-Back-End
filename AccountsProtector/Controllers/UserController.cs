@@ -1,12 +1,11 @@
-﻿using DataLayer.DTO;
-using DataLayer.Models;
+﻿using AccountsProtector.Core.Domain.Entities;
+using AccountsProtector.Core.DTO;
+using AccountsProtector.Core.ServiceContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ServicesLayer.JwtService;
-using ServicesLayer.UserService;
 
-namespace AccountsProtector.Controllers
+namespace AccountsProtector.UI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -22,7 +21,7 @@ namespace AccountsProtector.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] DTORegisterUser request)
+        public async Task<IActionResult> Register([FromBody] DtoRegisterUser request)
         {
             // validating model
             if (!ModelState.IsValid)
@@ -65,7 +64,7 @@ namespace AccountsProtector.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] DTOUserLoginRequest request, [FromServices] IConfiguration configuration)
+        public async Task<IActionResult> Login([FromBody] DtoUserLoginRequest request, [FromServices] IConfiguration configuration)
         {
             if (!ModelState.IsValid)
             {
@@ -87,7 +86,7 @@ namespace AccountsProtector.Controllers
                 return BadRequest("Invalid email or password");
             }
 
-            DTOUserLoginResponse response = new DTOUserLoginResponse
+            DtoUserLoginResponse response = new DtoUserLoginResponse
             {
                 Token = _jwtService.GenerateToken(user),
                 Email = user.Email,
@@ -100,7 +99,7 @@ namespace AccountsProtector.Controllers
         // BUG fix me
         // TODO fix meeeeeeeeeeeeeeeeeee
         [HttpPut]
-        public async Task<IActionResult> ChangePassword([FromBody] DTOUserChangePassword request)
+        public async Task<IActionResult> ChangePassword([FromBody] DtoUserChangePassword request)
         {
             if (!ModelState.IsValid)
             {

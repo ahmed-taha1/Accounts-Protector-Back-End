@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AccountsProtector.Extentions
+namespace AccountsProtector.UI.Extentions
 {
     public static class CustomJwtAuth
     {

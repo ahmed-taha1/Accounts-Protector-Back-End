@@ -1,14 +1,15 @@
+using AccountsProtector.Core.Domain.Entities;
+using AccountsProtector.Core.ServiceContracts;
+using AccountsProtector.Core.Services;
 using DataAccessLayer.UnitOfWork;
-using DataLayer.DataBase;
-using DataLayer.Models;
-using AccountsProtector.Extentions;
+using AccountsProtector.Infrastructure.AppDbContext;
+using AccountsProtector.Infrastructure.UnitOfWork;
+using AccountsProtector.UI.Extentions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
-using ServicesLayer.JwtService;
-using ServicesLayer.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
