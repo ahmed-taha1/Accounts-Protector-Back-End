@@ -32,6 +32,7 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 // services
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IJwtService, JwtService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 
 

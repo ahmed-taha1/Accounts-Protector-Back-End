@@ -9,5 +9,6 @@ namespace AccountsProtector.Core.ServiceContracts
         Task<bool> Login(string email, string password);
         Task<User>? GetUserByEmail(string email);
         Task<bool> UpdatePassword(string oldPassword, string newPassword, string email);
+        Task<bool> UpdatePassword(string newPassword, string email);
     }
 }

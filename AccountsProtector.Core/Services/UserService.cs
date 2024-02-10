@@ -41,5 +41,21 @@ namespace AccountsProtector.Core.Services
             await _dp.SaveAsync();
             return result.Succeeded;
         }
+
+        public async Task<bool> UpdatePassword(string newPassword, string email)
+        {
+            var user = await _dp.Users.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                // User not found
+                return false;
+            }
+
+            var token = await _dp.Users.GeneratePasswordResetTokenAsync(user);
+            var result = await _dp.Users.ResetPasswordAsync(user, token, newPassword);
+            await _dp.SaveAsync();
+            return result.Succeeded;
+        }
     }
 }

@@ -96,8 +96,6 @@ namespace AccountsProtector.UI.Controllers
             return Ok(response);
         }
 
-        // BUG fix me
-        // TODO fix meeeeeeeeeeeeeeeeeee
         [HttpPut]
         public async Task<IActionResult> ChangePassword([FromBody] DtoUserChangePassword request)
         {
@@ -124,6 +122,65 @@ namespace AccountsProtector.UI.Controllers
 
             }
             return Ok("Password Changed Successfully");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendOTP([FromBody] DtoSendOTPRequest request, [FromServices] IEmailService otpService)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<string> errors = new List<string>();
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        errors.Add(error.ErrorMessage);
+                    }
+                }
+                return BadRequest(errors);
+            }
+            
+            User? user = await _userService.GetUserByEmail(request.Email);
+            if (user == null)
+            {
+                return BadRequest("Invalid Email");
+            }
+
+            if (await otpService.SendOTP(request.Email))
+            {
+                return Ok("mail has been sent");
+            }
+            return BadRequest("mail has not been sent");
+        }
+
+        [HttpPut]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgetPassword([FromBody] DtoForgetPasswordRequest request,
+            [FromServices] IEmailService otpService)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<string> errors = new List<string>();
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        errors.Add(error.ErrorMessage);
+                    }
+                }
+                return BadRequest(errors);
+            }
+
+            if (await otpService.VerifyOTP(request.Email, request.OTPCode))
+            {
+                if (await _userService.UpdatePassword(request.NewPassword, request.Email))
+                {
+                    return Ok("Password Changed Successfully");
+                }
+                return BadRequest("Password Change Failed");
+            }
+            return BadRequest("OTP invalid or expired");
         }
 
 

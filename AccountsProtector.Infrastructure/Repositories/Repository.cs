@@ -59,7 +59,7 @@ namespace AccountsProtector.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task<T> SelectByMatch(Expression<Func<T, bool>> match)
+        public async Task<T> SelectByMatchAsync(Expression<Func<T, bool>> match)
         {
             return await _db.Set<T>().SingleOrDefaultAsync(match);
         }

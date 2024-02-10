@@ -12,5 +12,6 @@ namespace AccountsProtector.Infrastructure.AppDbContext
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Platform> Platforms { get; set; }
         public DbSet<AccountAttribute> AccountAttributes { get; set; }
+        public DbSet<OTP> OTPs { get; set; }
     }
 }

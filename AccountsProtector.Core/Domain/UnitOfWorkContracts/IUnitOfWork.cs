@@ -10,6 +10,7 @@ namespace DataAccessLayer.UnitOfWork
         public UserManager<User> Users { get; }
         public IRepository<AccountAttribute> AccountAttributes { get; }
         public IRepository<Platform> Platforms { get; }
+        public IRepository<OTP> OTPs { get; }
         public SignInManager<User> SignInManager { get; }
         Task SaveAsync();
     }

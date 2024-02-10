@@ -15,7 +15,7 @@ namespace DataLayer.Repository
         Task InsertAsync (T entity);
         Task UpdateAsync (T oldEntity, T newEntity);
         Task DeleteAsync (T entity);
-        Task<T> SelectByMatch (Expression<Func<T, bool>> match);
+        Task<T> SelectByMatchAsync (Expression<Func<T, bool>> match);
         Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match);
     }
 }
