@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace AccountsProtector.UI.Extentions
+namespace AccountsProtector.Extentions
 {
     public static class CustomSwaggerConfiguration
     {

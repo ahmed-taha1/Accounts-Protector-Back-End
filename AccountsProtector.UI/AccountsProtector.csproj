@@ -22,8 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AccountsProtector.Core\AccountsProtector.Core.csproj" />
-    <ProjectReference Include="..\AccountsProtector.Infrastructure\AccountsProtector.Infrastructure.csproj" />
+    <Folder Include="AccountsProtector.Core\Exceptions\" />
   </ItemGroup>
 
 </Project>

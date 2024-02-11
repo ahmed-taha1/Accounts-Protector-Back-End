@@ -1,11 +1,11 @@
-﻿using AccountsProtector.Core.Domain.Entities;
-using AccountsProtector.Core.DTO;
-using AccountsProtector.Core.ServiceContracts;
+﻿using AccountsProtector.AccountsProtector.Core.Domain.Entities;
+using AccountsProtector.AccountsProtector.Core.DTO;
+using AccountsProtector.AccountsProtector.Core.ServiceContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AccountsProtector.UI.Controllers
+namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -115,7 +115,7 @@ namespace AccountsProtector.UI.Controllers
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             string token = authorizationHeader.Split(' ').LastOrDefault();
             string email = _jwtService.GetEmailFromToken(token);
-            
+
             if (email == null || !await _userService.UpdatePassword(request.OldPassword, request.NewPassword, email))
             {
                 return BadRequest("Invalid Data");
@@ -140,7 +140,7 @@ namespace AccountsProtector.UI.Controllers
                 }
                 return BadRequest(errors);
             }
-            
+
             User? user = await _userService.GetUserByEmail(request.Email);
             if (user == null)
             {

@@ -1,10 +1,10 @@
-using AccountsProtector.Core.Domain.Entities;
-using AccountsProtector.Core.ServiceContracts;
-using AccountsProtector.Core.Services;
-using DataAccessLayer.UnitOfWork;
-using AccountsProtector.Infrastructure.AppDbContext;
-using AccountsProtector.Infrastructure.UnitOfWork;
-using AccountsProtector.UI.Extentions;
+using AccountsProtector.AccountsProtector.Core.Domain.Entities;
+using AccountsProtector.AccountsProtector.Core.Domain.UnitOfWorkContracts;
+using AccountsProtector.AccountsProtector.Core.ServiceContracts;
+using AccountsProtector.AccountsProtector.Core.Services;
+using AccountsProtector.AccountsProtector.Infrastructure.AppDbContext;
+using AccountsProtector.AccountsProtector.Infrastructure.UnitOfWork;
+using AccountsProtector.Extentions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

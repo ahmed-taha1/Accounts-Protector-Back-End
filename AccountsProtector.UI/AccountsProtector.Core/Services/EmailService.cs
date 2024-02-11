@@ -1,11 +1,10 @@
-﻿using System.Net.Mail;
-using System.Net;
-using AccountsProtector.Core.Domain.Entities;
-using AccountsProtector.Core.ServiceContracts;
-using DataAccessLayer.UnitOfWork;
-using Microsoft.Extensions.Configuration;
+﻿using System.Net;
+using System.Net.Mail;
+using AccountsProtector.AccountsProtector.Core.Domain.Entities;
+using AccountsProtector.AccountsProtector.Core.Domain.UnitOfWorkContracts;
+using AccountsProtector.AccountsProtector.Core.ServiceContracts;
 
-namespace AccountsProtector.Core.Services
+namespace AccountsProtector.AccountsProtector.Core.Services
 {
     public class EmailService : IEmailService
     {

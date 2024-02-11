@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AccountsProtector.UI.Controllers
+namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
