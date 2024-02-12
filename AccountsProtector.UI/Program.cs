@@ -6,6 +6,7 @@ using AccountsProtector.AccountsProtector.Infrastructure.AppDbContext;
 using AccountsProtector.AccountsProtector.Infrastructure.UnitOfWork;
 using AccountsProtector.Extentions;
 using AccountsProtector.Filters;
+using AccountsProtector.Middlewares;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -74,6 +75,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandlingMiddleware();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
