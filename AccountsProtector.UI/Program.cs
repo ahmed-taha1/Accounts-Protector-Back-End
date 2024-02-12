@@ -5,19 +5,26 @@ using AccountsProtector.AccountsProtector.Core.Services;
 using AccountsProtector.AccountsProtector.Infrastructure.AppDbContext;
 using AccountsProtector.AccountsProtector.Infrastructure.UnitOfWork;
 using AccountsProtector.Extentions;
+using AccountsProtector.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// configuration
+builder.Services.Configure<ApiBehaviorOptions>(options
+    => options.SuppressModelStateInvalidFilter = true);
+
 // database connection
 builder.Services.AddDbContext<AppDbContext>
     (options => options.UseSqlServer
         (builder.Configuration.GetConnectionString
-            ("myConnectionString")));
+            ("local")));
 
 // Identity
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
@@ -34,6 +41,8 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
+// filters
+builder.Services.AddScoped<ValidationFilterAttribute>();
 
 
 builder.Services.AddAuthorization(op => {});

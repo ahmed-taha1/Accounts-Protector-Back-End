@@ -19,8 +19,8 @@ namespace AccountsProtector.Extentions
                 op.SaveToken = true;
                 op.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = configuration["JWT:Issuer"],
+                    // ValidateIssuer = true,
+                    // ValidIssuer = configuration["JWT:Issuer"],
                     ValidateAudience = false,
                     ValidateLifetime = false,
                     ValidateIssuerSigningKey = true,

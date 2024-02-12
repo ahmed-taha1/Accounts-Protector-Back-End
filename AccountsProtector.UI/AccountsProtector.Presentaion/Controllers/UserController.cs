@@ -1,6 +1,9 @@
-﻿using AccountsProtector.AccountsProtector.Core.Domain.Entities;
+﻿using System.Reflection.Metadata.Ecma335;
+using AccountsProtector.AccountsProtector.Core.Domain.Entities;
 using AccountsProtector.AccountsProtector.Core.DTO;
+using AccountsProtector.AccountsProtector.Core.Helpers;
 using AccountsProtector.AccountsProtector.Core.ServiceContracts;
+using AccountsProtector.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,22 +24,9 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Register([FromBody] DtoRegisterUser request)
         {
-            // validating model
-            if (!ModelState.IsValid)
-            {
-                List<string> errors = new List<string>();
-                foreach (var modelState in ModelState.Values)
-                {
-                    foreach (var error in modelState.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(errors);
-            }
-
             User user = new User
             {
                 PersonName = request.PersonName,
@@ -50,12 +40,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
             // if registration failed
             if (!result.Succeeded)
             {
-                List<string> errors = new List<string>();
-                foreach (var error in result.Errors)
-                {
-                    errors.Add(error.Description);
-                }
-                return BadRequest(errors);
+                ErrorHelper.IdentityResultErrorHandler(result);
             }
 
             // if registration succeeded
@@ -64,26 +49,17 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Login([FromBody] DtoUserLoginRequest request, [FromServices] IConfiguration configuration)
         {
-            if (!ModelState.IsValid)
-            {
-                List<string> errors = new List<string>();
-                foreach (var modelState in ModelState.Values)
-                {
-                    foreach (var error in modelState.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(errors);
-            }
-
             User? user = await _userService.GetUserByEmail(request.Email);
 
             if (user == null || !await _userService.Login(user.Email, request.Password))
             {
-                return BadRequest("Invalid email or password");
+                return BadRequest(new DtoErrorsResponse
+                {
+                    Errors = new List<string>{"User name or password invalid"}
+                });
             }
 
             DtoUserLoginResponse response = new DtoUserLoginResponse
@@ -97,90 +73,74 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
         }
 
         [HttpPut]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> ChangePassword([FromBody] DtoUserChangePassword request)
         {
-            if (!ModelState.IsValid)
-            {
-                List<string> errors = new List<string>();
-                foreach (var modelState in ModelState.Values)
-                {
-                    foreach (var error in modelState.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(errors);
-            }
-
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             string token = authorizationHeader.Split(' ').LastOrDefault();
             string email = _jwtService.GetEmailFromToken(token);
 
             if (email == null || !await _userService.UpdatePassword(request.OldPassword, request.NewPassword, email))
             {
-                return BadRequest("Invalid Data");
-
+                return BadRequest(
+                    new DtoErrorsResponse
+                    {
+                        Errors = new List<string> { "Password Change Failed"}
+                    });
             }
-            return Ok("Password Changed Successfully");
+            return Ok();
         }
 
         [HttpPost]
         [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> SendOTP([FromBody] DtoSendOTPRequest request, [FromServices] IEmailService otpService)
         {
-            if (!ModelState.IsValid)
-            {
-                List<string> errors = new List<string>();
-                foreach (var modelState in ModelState.Values)
-                {
-                    foreach (var error in modelState.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(errors);
-            }
-
             User? user = await _userService.GetUserByEmail(request.Email);
             if (user == null)
             {
-                return BadRequest("Invalid Email");
+                return BadRequest(
+                    new DtoErrorsResponse
+                    {
+                        Errors = new List<string> { "Email not found" }
+                    });
             }
 
             if (await otpService.SendOTP(request.Email))
             {
-                return Ok("mail has been sent");
+                return Ok();
             }
-            return BadRequest("mail has not been sent");
+            return BadRequest(
+                new DtoErrorsResponse
+                {
+                    Errors = new List<string> { "OTP sending failed" }
+                });
         }
 
         [HttpPut]
         [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> ForgetPassword([FromBody] DtoForgetPasswordRequest request,
             [FromServices] IEmailService otpService)
         {
-            if (!ModelState.IsValid)
-            {
-                List<string> errors = new List<string>();
-                foreach (var modelState in ModelState.Values)
-                {
-                    foreach (var error in modelState.Errors)
-                    {
-                        errors.Add(error.ErrorMessage);
-                    }
-                }
-                return BadRequest(errors);
-            }
-
             if (await otpService.VerifyOTP(request.Email, request.OTPCode))
             {
                 if (await _userService.UpdatePassword(request.NewPassword, request.Email))
                 {
-                    return Ok("Password Changed Successfully");
+                    return Ok();
                 }
-                return BadRequest("Password Change Failed");
+                return BadRequest(
+                    new DtoErrorsResponse
+                    {
+                        Errors = new List<string>{ "Password Change Failed" } 
+
+                    });
             }
-            return BadRequest("OTP invalid or expired");
+            return BadRequest(
+                new DtoErrorsResponse
+                {
+                    Errors = new List<string> { "Otp is invalid or expired" }
+                }); ;
         }
 
 
