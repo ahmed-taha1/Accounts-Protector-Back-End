@@ -28,9 +28,13 @@ namespace AccountsProtector.AccountsProtector.Core.Helpers
             List<string> errors = new List<string>();
             foreach (var error in identityResult.Errors)
             {
-                errors.Add(error.Description);
+                string errorDescription = error.Description;
+                if (errorDescription.Contains("Username"))
+                {
+                    errorDescription = errorDescription.Replace("Username", "Email");
+                }
+                errors.Add(errorDescription);
             }
-
             return new DtoErrorsResponse() { Errors = errors };
         }
     }

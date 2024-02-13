@@ -13,24 +13,24 @@ namespace AccountsProtector.AccountsProtector.Core.Services
         {
             _dp = unitOfWork;
         }
-        public async Task<IdentityResult> Register(User user, string password)
+        public async Task<IdentityResult> RegisterAsync(User user, string password)
         {
             IdentityResult result = await _dp.Users.CreateAsync(user, password);
             await _dp.SaveAsync();
             return result;
         }
-        public async Task<bool> Login(string email, string password)
+        public async Task<bool> LoginAsync(string email, string password)
         {
             SignInResult result = await _dp.SignInManager.PasswordSignInAsync(email, password, isPersistent:true, lockoutOnFailure: false);
             return result.Succeeded;
         }
 
-        public async Task<User>? GetUserByEmail(string email)
+        public async Task<User>? GetUserByEmailAsync(string email)
         {
             return await _dp.Users.FindByEmailAsync(email);
         }
 
-        public async Task<bool> UpdatePassword(string oldPassword, string newPassword, string email)
+        public async Task<bool> UpdatePasswordAsync(string oldPassword, string newPassword, string email)
         {
             User user = await _dp.Users.FindByEmailAsync(email);
             if (user == null)
@@ -42,7 +42,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             return result.Succeeded;
         }
 
-        public async Task<bool> UpdatePassword(string newPassword, string email)
+        public async Task<bool> UpdatePasswordAsync(string newPassword, string email)
         {
             var user = await _dp.Users.FindByEmailAsync(email);
 

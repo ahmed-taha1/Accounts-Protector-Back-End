@@ -35,12 +35,12 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
                 PhoneNumber = request.PhoneNumber,
             };
 
-            IdentityResult result = await _userService.Register(user, request.Password);
+            IdentityResult result = await _userService.RegisterAsync(user, request.Password);
 
             // if registration failed
             if (!result.Succeeded)
             {
-                ErrorHelper.IdentityResultErrorHandler(result);
+                return BadRequest(ErrorHelper.IdentityResultErrorHandler(result));
             }
 
             // if registration succeeded
@@ -52,9 +52,9 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Login([FromBody] DtoUserLoginRequest request, [FromServices] IConfiguration configuration)
         {
-            User? user = await _userService.GetUserByEmail(request.Email);
+            User? user = await _userService.GetUserByEmailAsync(request.Email);
 
-            if (user == null || !await _userService.Login(user.Email, request.Password))
+            if (user == null || !await _userService.LoginAsync(user.Email, request.Password))
             {
                 return BadRequest(new DtoErrorsResponse
                 {
@@ -80,7 +80,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
             string token = authorizationHeader.Split(' ').LastOrDefault();
             string email = _jwtService.GetEmailFromToken(token);
 
-            if (email == null || !await _userService.UpdatePassword(request.OldPassword, request.NewPassword, email))
+            if (email == null || !await _userService.UpdatePasswordAsync(request.OldPassword, request.NewPassword, email))
             {
                 return BadRequest(
                     new DtoErrorsResponse
@@ -96,7 +96,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> SendOTP([FromBody] DtoSendOTPRequest request, [FromServices] IEmailService otpService)
         {
-            User? user = await _userService.GetUserByEmail(request.Email);
+            User? user = await _userService.GetUserByEmailAsync(request.Email);
             if (user == null)
             {
                 return BadRequest(
@@ -125,7 +125,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
         {
             if (await otpService.VerifyOTP(request.Email, request.OTPCode))
             {
-                if (await _userService.UpdatePassword(request.NewPassword, request.Email))
+                if (await _userService.UpdatePasswordAsync(request.NewPassword, request.Email))
                 {
                     return Ok();
                 }
@@ -148,7 +148,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)
         {
-            return Ok(await _userService.GetUserByEmail(email) == null);
+            return Ok(await _userService.GetUserByEmailAsync(email) == null);
         }
 
         [HttpGet]
