@@ -2,6 +2,6 @@
 {
     public class DtoErrorsResponse
     {
-        public ICollection<string>? Errors { get; set; }
+        public ICollection<string>? errors { get; set; }
     }
 }

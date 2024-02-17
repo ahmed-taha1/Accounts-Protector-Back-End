@@ -20,7 +20,7 @@ namespace AccountsProtector.AccountsProtector.Core.Helpers
                 }
             }
 
-            return new DtoErrorsResponse() {Errors = errors};
+            return new DtoErrorsResponse() {errors = errors};
         }
 
         public static object IdentityResultErrorHandler(IdentityResult identityResult)
@@ -35,7 +35,7 @@ namespace AccountsProtector.AccountsProtector.Core.Helpers
                 }
                 errors.Add(errorDescription);
             }
-            return new DtoErrorsResponse() { Errors = errors };
+            return new DtoErrorsResponse() { errors = errors };
         }
     }
 }

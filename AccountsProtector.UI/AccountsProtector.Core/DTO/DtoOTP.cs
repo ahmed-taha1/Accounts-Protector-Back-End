@@ -5,19 +5,29 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
     public class DtoSendOTPRequest
     {
         [Required]
-        [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         public string Email { get; set; }
     }
 
-    public class DtoForgetPasswordRequest
+    public class DtoVerifyOTPRequest
     {
         [Required]
         public int OTPCode { get; set; }
         [Required]
-        [DataType(DataType.Password)]
+        [EmailAddress]
+        public string Email { get; set; }
+    }
+    public class DtoVerifyOTPResponse
+    {
+        public string? Token { get; set; }
+    }
+
+    public class DtoResetPasswordRequest
+    {
+        [Required]
         public string NewPassword { get; set; }
         [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
+        [Compare(nameof(NewPassword), ErrorMessage = "passwords do not match")]
+        public string NewPasswordRepeat { get; set; }
     }
 }

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AccountsProtector.Core\Exceptions\**" />
+    <Content Remove="AccountsProtector.Core\Exceptions\**" />
+    <EmbeddedResource Remove="AccountsProtector.Core\Exceptions\**" />
+    <None Remove="AccountsProtector.Core\Exceptions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
@@ -19,10 +26,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AccountsProtector.Core\Exceptions\" />
   </ItemGroup>
 
 </Project>

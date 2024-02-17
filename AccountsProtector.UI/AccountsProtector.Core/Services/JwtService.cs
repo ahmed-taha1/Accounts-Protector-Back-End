@@ -17,14 +17,14 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             _configuration = configuration;
         }
 
-        public string GenerateToken(User user)
+        public string GenerateToken(User user, DateTime? customExpirationDate)
         {
             DateTime expirationDate = DateTime.UtcNow.AddDays(Convert.ToDouble(
                 _configuration["JWT:EXPIRY_IN_DAYS"]));
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.PersonName),
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+                new Claim(ClaimTypes.Name, user.FirstName ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 // new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()), // makes the token unreadable and casues an error
             };
@@ -34,7 +34,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                 issuer: _configuration["JWT:Issuer"],
                 audience: _configuration["JWT:Audience"],
                 claims: claims,
-                expires: expirationDate,
+                expires: customExpirationDate ?? expirationDate,
                 signingCredentials: creds
             );
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);

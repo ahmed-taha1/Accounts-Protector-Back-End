@@ -29,7 +29,8 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
         {
             User user = new User
             {
-                PersonName = request.PersonName,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 UserName = request.Email,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
@@ -44,7 +45,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
             }
 
             // if registration succeeded
-            return Ok(StatusCode(StatusCodes.Status201Created, user.Id));
+            return StatusCode(StatusCodes.Status201Created, new {messege = "success"});
         }
 
         [HttpPost]
@@ -58,15 +59,16 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
             {
                 return BadRequest(new DtoErrorsResponse
                 {
-                    Errors = new List<string>{"User name or password invalid"}
+                    errors = new List<string>{"User name or password invalid"}
                 });
             }
 
             DtoUserLoginResponse response = new DtoUserLoginResponse
             {
-                Token = _jwtService.GenerateToken(user),
+                Token = _jwtService.GenerateToken(user, null),
                 Email = user.Email,
-                PersonName = user.PersonName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Expiration = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration["JWT:EXPIRY_IN_DAYS"]))
             };
             return Ok(response);
@@ -85,7 +87,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
                 return BadRequest(
                     new DtoErrorsResponse
                     {
-                        Errors = new List<string> { "Password Change Failed"}
+                        errors = new List<string> { "Password Change Failed" }
                     });
             }
             return Ok();
@@ -102,7 +104,7 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
                 return BadRequest(
                     new DtoErrorsResponse
                     {
-                        Errors = new List<string> { "Email not found" }
+                        errors = new List<string> { "Email not found" }
                     });
             }
 
@@ -113,45 +115,66 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
             return BadRequest(
                 new DtoErrorsResponse
                 {
-                    Errors = new List<string> { "OTP sending failed" }
+                    errors = new List<string> { "OTP sending failed" }
                 });
         }
 
         [HttpPut]
-        [AllowAnonymous]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> ForgetPassword([FromBody] DtoForgetPasswordRequest request,
-            [FromServices] IEmailService otpService)
+        public async Task<IActionResult> ResetPassword([FromBody] DtoResetPasswordRequest request)
         {
-            if (await otpService.VerifyOTP(request.Email, request.OTPCode))
-            {
-                if (await _userService.UpdatePasswordAsync(request.NewPassword, request.Email))
-                {
-                    return Ok();
-                }
-                return BadRequest(
-                    new DtoErrorsResponse
-                    {
-                        Errors = new List<string>{ "Password Change Failed" } 
+            string authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault()!;
+            string token = authorizationHeader.Split(' ').LastOrDefault()!;
+            string email = _jwtService.GetEmailFromToken(token)!;
 
-                    });
+            if (await _userService.UpdatePasswordAsync(request.NewPassword, email))
+            {
+                return Ok();
             }
             return BadRequest(
                 new DtoErrorsResponse
                 {
-                    Errors = new List<string> { "Otp is invalid or expired" }
-                }); ;
+                    errors = new List<string>{ "Password Change Failed" }
+                });
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> VerifyOTP([FromBody] DtoVerifyOTPRequest request,
+            [FromServices] IEmailService otpService)
+        {
+            if (await _userService.GetUserByEmailAsync(request.Email) == null)
+            {
+                return BadRequest(
+                    new DtoErrorsResponse {
+                        errors = new List<string> { "Email not found" }
+                    });
+            }
+            if (await otpService.VerifyOTP(request.Email, request.OTPCode))
+            {
+                User user = await _userService.GetUserByEmailAsync(request.Email);
+                var response = new DtoVerifyOTPResponse
+                {
+                    Token = _jwtService.GenerateToken(user, DateTime.UtcNow.AddHours(1))
+                };
+                return Ok(response);
+            }
+            return BadRequest(
+                               new DtoErrorsResponse
+                               {
+                    errors = new List<string> { "Otp is invalid or expired" }
+                });
+        }
 
-        [HttpGet]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)
         {
             return Ok(await _userService.GetUserByEmailAsync(email) == null);
         }
 
-        [HttpGet]
+        [HttpPost]
         [AllowAnonymous]
         public IActionResult ValidateToken(string token, [FromServices] IJwtService jwtService)
         {

@@ -28,7 +28,7 @@ namespace AccountsProtector.Middlewares
                 {
                     DtoErrorsResponse errors = new DtoErrorsResponse
                     {
-                        Errors = new List<string>() { e.InnerException.Message}
+                        errors = new List<string>() { e.InnerException.Message}
 
                     };
                     httpContext.Response.StatusCode = 400;
@@ -39,7 +39,7 @@ namespace AccountsProtector.Middlewares
                 {
                     DtoErrorsResponse errors = new DtoErrorsResponse
                     {
-                        Errors = new List<string>() { e.Message }
+                        errors = new List<string>() { e.Message }
                     };
                     httpContext.Response.StatusCode = 400;
                     httpContext.Response.ContentType = "application/json";
