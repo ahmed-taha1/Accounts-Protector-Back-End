@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using AccountsProtector.AccountsProtector.Core.Domain.Entities;
+﻿using AccountsProtector.AccountsProtector.Core.Domain.Entities;
 using AccountsProtector.AccountsProtector.Core.DTO;
 using AccountsProtector.AccountsProtector.Core.Helpers;
 using AccountsProtector.AccountsProtector.Core.ServiceContracts;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
+namespace AccountsProtector.AccountsProtector.Presentation.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -93,31 +92,6 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> SendOTP([FromBody] DtoSendOTPRequest request, [FromServices] IEmailService otpService)
-        {
-            User? user = await _userService.GetUserByEmailAsync(request.Email);
-            if (user == null)
-            {
-                return BadRequest(
-                    new DtoErrorsResponse
-                    {
-                        errors = new List<string> { "Email not found" }
-                    });
-            }
-
-            if (await otpService.SendOTP(request.Email))
-            {
-                return Ok();
-            }
-            return BadRequest(
-                new DtoErrorsResponse
-                {
-                    errors = new List<string> { "OTP sending failed" }
-                });
-        }
 
         [HttpPut]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
@@ -134,51 +108,22 @@ namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
             return BadRequest(
                 new DtoErrorsResponse
                 {
-                    errors = new List<string>{ "Password Change Failed" }
+                    errors = new List<string>{ "Password Change Failed tip: \"try enter stronger password\"" }
                 });
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> VerifyOTP([FromBody] DtoVerifyOTPRequest request,
-            [FromServices] IEmailService otpService)
-        {
-            if (await _userService.GetUserByEmailAsync(request.Email) == null)
-            {
-                return BadRequest(
-                    new DtoErrorsResponse {
-                        errors = new List<string> { "Email not found" }
-                    });
-            }
-            if (await otpService.VerifyOTP(request.Email, request.OTPCode))
-            {
-                User user = await _userService.GetUserByEmailAsync(request.Email);
-                var response = new DtoVerifyOTPResponse
-                {
-                    Token = _jwtService.GenerateToken(user, DateTime.UtcNow.AddHours(1))
-                };
-                return Ok(response);
-            }
-            return BadRequest(
-                               new DtoErrorsResponse
-                               {
-                    errors = new List<string> { "Otp is invalid or expired" }
-                });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)
-        {
-            return Ok(await _userService.GetUserByEmailAsync(email) == null);
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public IActionResult ValidateToken(string token, [FromServices] IJwtService jwtService)
-        {
-            return Ok(jwtService.ValidateToken(token));
-        }
+        // [HttpPost]
+        // [AllowAnonymous]
+        // public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)
+        // {
+        //     return Ok(await _userService.GetUserByEmailAsync(email) == null);
+        // }
+        //
+        // [HttpPost]
+        // [AllowAnonymous]
+        // public IActionResult ValidateToken(string token, [FromServices] IJwtService jwtService)
+        // {
+        //     return Ok(jwtService.ValidateToken(token));
+        // }
     }
 }

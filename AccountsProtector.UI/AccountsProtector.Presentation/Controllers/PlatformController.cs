@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AccountsProtector.AccountsProtector.Presentaion.Controllers
+namespace AccountsProtector.AccountsProtector.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

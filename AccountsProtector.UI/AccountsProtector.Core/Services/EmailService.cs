@@ -68,8 +68,8 @@ namespace AccountsProtector.AccountsProtector.Core.Services
 
         public async Task<bool> VerifyOTP(string email, int otpCode)
         {
-            OTP otp = await _unitOfWork.OTPs.SelectByMatchAsync(x => x.UserEmail == email);
-            if (otp.OTPCode != otpCode || otp.ExpirationDate < DateTime.Now)
+            OTP? otp = await _unitOfWork.OTPs.SelectByMatchAsync(x => x.UserEmail == email);
+            if (otp == null || otp.OTPCode != otpCode || otp.ExpirationDate < DateTime.Now)
             {
                 return false;
             }
