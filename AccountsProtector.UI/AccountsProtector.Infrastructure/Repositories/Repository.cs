@@ -64,9 +64,39 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             return await _db.Set<T>().SingleOrDefaultAsync(match);
         }
 
+        public async Task<T> SelectByMatchAsync(Expression<Func<T, bool>> match, List<string> joins)
+        {
+            IQueryable<T> query = _db.Set<T>();
+
+            // Include navigation properties specified in the includes array
+            foreach (var join in joins)
+            {
+                query = query.Include(join);
+            }
+
+            // Apply the match predicate
+            return (await query.FirstOrDefaultAsync(match))!;
+        }
+
         public async Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match)
         {
             return await _db.Set<T>().Where(match).ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match, List<string> joins)
+        {
+            IQueryable<T> query = _db.Set<T>();
+
+            // Include navigation properties specified in the includes array
+            foreach (var join in joins)
+            {
+                query = query.Include(join);
+            }
+
+            // Apply the match predicate
+            query = query.Where(match);
+
+            return await query.ToListAsync();
         }
     }
 }

@@ -30,5 +30,35 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             }
             return false;
         }
+
+        public async Task<ICollection<Platform>> GetAllPlatforms(string userEmail)
+        {
+            User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
+            IEnumerable<Platform> platforms = await _unitOfWork.Platforms.SelectListByMatchAsync(p => p.UserId == user!.Id, new List<string>{"Accounts"});
+            return platforms.ToList();
+        }
+
+        public Task<Platform> GetAllPlatformsWithAccounts(string userEmail)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Platform> GetPlatformByIdWithAccounts(string platformId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> DeletePlatformAsync(int id, string userEmail)
+        {
+            User user = (await _unitOfWork.Users.FindByEmailAsync(userEmail))!;
+            Platform platform = await _unitOfWork.Platforms.GetByIdAsync(id);
+            if (platform != null && platform.UserId == user.Id)
+            {
+                await _unitOfWork.Platforms.DeleteAsync(platform);
+                await _unitOfWork.SaveAsync();
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -14,6 +14,6 @@ namespace AccountsProtector.AccountsProtector.Core.Domain.Entities
         [ForeignKey(nameof(Platform))]
         public int PlatformId { get; set; }
         public virtual Platform? Platform { get; set; }
-        public virtual List<AccountAttribute>? AccountAttributes { get; set; }
+        public virtual List<AccountAttribute>? AccountAttributes { get; set; } = new List<AccountAttribute>();
     }
 }

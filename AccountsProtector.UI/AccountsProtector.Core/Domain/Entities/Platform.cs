@@ -17,6 +17,6 @@ namespace AccountsProtector.AccountsProtector.Core.Domain.Entities
         [ForeignKey(nameof(User))]
         public Guid UserId { get; set; }
         public virtual User? User { get; set; }
-        public virtual ICollection<Account>? Accounts { get; set; }
+        public virtual ICollection<Account>? Accounts { get; set; } = new List<Account>();
     }
 }

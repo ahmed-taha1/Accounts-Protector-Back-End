@@ -11,6 +11,8 @@ namespace AccountsProtector.AccountsProtector.Core.Domain.RepositoryContracts
         Task UpdateAsync (T oldEntity, T newEntity);
         Task DeleteAsync (T entity);
         Task<T> SelectByMatchAsync (Expression<Func<T, bool>> match);
+        Task<T> SelectByMatchAsync (Expression<Func<T, bool>> match, List<String> joins);
         Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match);
+        Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match, List<String> joins);
     }
 }
