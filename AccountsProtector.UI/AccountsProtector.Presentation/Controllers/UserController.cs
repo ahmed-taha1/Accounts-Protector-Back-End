@@ -24,7 +24,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> Register([FromBody] DtoRegisterUser request)
+        public async Task<IActionResult> Register([FromBody] DtoRegisterRequest request)
         {
             User user = new User
             {
@@ -50,7 +50,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> Login([FromBody] DtoUserLoginRequest request, [FromServices] IConfiguration configuration)
+        public async Task<IActionResult> Login([FromBody] DtoLoginRequest request, [FromServices] IConfiguration configuration)
         {
             User? user = await _userService.GetUserByEmailAsync(request.Email);
 
@@ -62,7 +62,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 });
             }
 
-            DtoUserLoginResponse response = new DtoUserLoginResponse
+            DtoLoginResponse response = new DtoLoginResponse
             {
                 Token = _jwtService.GenerateToken(user, null),
                 Email = user.Email,
@@ -75,10 +75,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
 
         [HttpPut]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> ChangePassword([FromBody] DtoUserChangePassword request)
+        public async Task<IActionResult> ChangePassword([FromBody] DtoChangePasswordRequest request)
         {
-            var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            string token = authorizationHeader.Split(' ').LastOrDefault();
+            var token = HttpContext.Request.Headers["Authorization"];
             string email = _jwtService.GetEmailFromToken(token);
 
             if (email == null || !await _userService.UpdatePasswordAsync(request.OldPassword, request.NewPassword, email))

@@ -41,6 +41,7 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IPlatformService, PlatformService>();
 
 // filters
 builder.Services.AddScoped<ValidationFilterAttribute>();

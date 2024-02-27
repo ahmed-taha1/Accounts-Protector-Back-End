@@ -16,6 +16,27 @@ namespace AccountsProtector.AccountsProtector.Core.Services
         public async Task<IdentityResult> RegisterAsync(User user, string password)
         {
             IdentityResult result = await _dp.Users.CreateAsync(user, password);
+            user.Platforms = new List<Platform>
+            {
+                new Platform
+                {
+                    UserId = user.Id,
+                    PlatformName = "Facebook",
+                    IconColor = "ff38569E",
+                },
+                new Platform
+                {
+                    UserId = user.Id,
+                    PlatformName = "Instagram",
+                    IconColor = "ffe14a80",
+                },
+                new Platform
+                {
+                    UserId = user.Id,
+                    PlatformName = "Google",
+                    IconColor = "fffbbe0d",
+                }
+            };
             await _dp.SaveAsync();
             return result;
         }

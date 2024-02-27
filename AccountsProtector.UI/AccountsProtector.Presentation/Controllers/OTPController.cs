@@ -1,4 +1,5 @@
-﻿using AccountsProtector.AccountsProtector.Core.Domain.Entities;
+﻿using System.Diagnostics;
+using AccountsProtector.AccountsProtector.Core.Domain.Entities;
 using AccountsProtector.AccountsProtector.Core.DTO;
 using AccountsProtector.AccountsProtector.Core.ServiceContracts;
 using AccountsProtector.Filters;
@@ -51,7 +52,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> VerifyOTP([FromBody] DtoVerifyOTPRequest request)
         {
-            if (await _userService.GetUserByEmailAsync(request.Email) == null)
+            User? user = await _userService.GetUserByEmailAsync(request.Email);
+
+            if (user == null)
             {
                 return BadRequest(
                     new DtoErrorsResponse
@@ -59,9 +62,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                         errors = new List<string> { "Email not found" }
                     });
             }
-            if (await _emailService.VerifyOTP(request.Email, request.OTPCode))
+
+            if (await _emailService.VerifyOTP(request.Email, request.OTPCode ?? -1))
             {
-                User user = await _userService.GetUserByEmailAsync(request.Email);
                 var response = new DtoVerifyOTPResponse
                 {
                     Token = _jwtService.GenerateToken(user, DateTime.UtcNow.AddHours(1))

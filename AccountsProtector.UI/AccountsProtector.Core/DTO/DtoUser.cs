@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AccountsProtector.AccountsProtector.Core.DTO
 {
-    public class DtoRegisterUser
+    public class DtoRegisterRequest
     {
         [Required(ErrorMessage = "{0} is required")]
         [EmailAddress(ErrorMessage = "invalid email")]
@@ -26,7 +26,7 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         public string? PhoneNumber { get; set; }
     }
     
-    public class DtoUserLoginRequest
+    public class DtoLoginRequest
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "invalid email")]
@@ -35,7 +35,7 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         public string? Password { get; set; }
     }
 
-    public class DtoUserLoginResponse
+    public class DtoLoginResponse
     {
         public string? Token { get; set; } = string.Empty;
         public string? Email { get; set; } = string.Empty;
@@ -44,7 +44,7 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         public DateTime? Expiration { get; set; }
     }
 
-    public class DtoUserChangePassword
+    public class DtoChangePasswordRequest
     {
         [Required(ErrorMessage = "Old password is required")]
         public string? OldPassword { get; set; }

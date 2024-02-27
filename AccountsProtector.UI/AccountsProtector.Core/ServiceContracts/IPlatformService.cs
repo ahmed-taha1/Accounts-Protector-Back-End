@@ -1,10 +1,12 @@
 ﻿using AccountsProtector.AccountsProtector.Core.Domain.Entities;
+using AccountsProtector.AccountsProtector.Core.DTO;
 
 namespace AccountsProtector.AccountsProtector.Core.ServiceContracts
 {
     public interface IPlatformService
     {
-        ICollection<Account> GetAccounts(Guid platformId);
-        bool AddAccount(Account account);
+        Task<bool> AddPlatformAsync(DtoAddPlatformRequest request, string userEmail);
+        // ICollection<Account> GetAccounts(Guid platformId);
+        // bool AddAccount(Account account);
     }
 }

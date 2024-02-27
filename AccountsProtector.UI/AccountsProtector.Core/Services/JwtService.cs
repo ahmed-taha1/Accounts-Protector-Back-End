@@ -80,6 +80,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
         {
             try
             {
+                token = token.Split(' ').LastOrDefault()!;
                 // Decode the token to retrieve its claims
                 var handler = new JwtSecurityTokenHandler();
                 var jsonToken = handler.ReadToken(token) as JwtSecurityToken;

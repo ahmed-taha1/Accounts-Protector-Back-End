@@ -85,11 +85,13 @@ namespace AccountsProtector.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("OTPCode")
+                        .HasMaxLength(10)
                         .HasColumnType("int");
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.HasKey("Id");
 
@@ -103,6 +105,11 @@ namespace AccountsProtector.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IconColor")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PlatformName")
                         .IsRequired()

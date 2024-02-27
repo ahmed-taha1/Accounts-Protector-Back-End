@@ -11,6 +11,9 @@ namespace AccountsProtector.AccountsProtector.Core.Domain.Entities
         [StringLength(100)]
         public string? PlatformName { get; set; }
         [Required]
+        [StringLength(100)]
+        public string? IconColor { get; set; }
+        [Required]
         [ForeignKey(nameof(User))]
         public Guid UserId { get; set; }
         public virtual User? User { get; set; }

@@ -6,16 +6,16 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 
     public class DtoVerifyOTPRequest
     {
         [Required]
-        public int OTPCode { get; set; }
+        public int? OTPCode { get; set; }
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
     public class DtoVerifyOTPResponse
     {
@@ -25,9 +25,9 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
     public class DtoResetPasswordRequest
     {
         [Required]
-        public string NewPassword { get; set; }
+        public string? NewPassword { get; set; }
         [Required]
         [Compare(nameof(NewPassword), ErrorMessage = "passwords do not match")]
-        public string NewPasswordRepeat { get; set; }
+        public string? NewPasswordRepeat { get; set; }
     }
 }
