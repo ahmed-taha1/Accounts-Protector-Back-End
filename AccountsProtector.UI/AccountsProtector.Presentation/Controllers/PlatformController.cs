@@ -18,6 +18,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             _jwtService = jwtService;
         }
 
+
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> AddPlatform([FromBody] DtoAddPlatformRequest request)
@@ -26,9 +27,21 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             string token = Request.Headers["Authorization"]!;
             string userEmail = _jwtService.GetEmailFromToken(token)!;
 
-            if (await _platformService.AddPlatformAsync(request, userEmail))
+            Platform platform = new Platform
             {
-                return StatusCode(StatusCodes.Status201Created);
+                PlatformName = request.PlatformName,
+                IconColor = request.IconColor
+            };
+            if (await _platformService.AddPlatformAsync(platform, userEmail))
+            {
+                DtoPlatform response = new DtoPlatform
+                {
+                    Id = platform.Id,
+                    PlatformName = platform.PlatformName,
+                    IconColor = platform.IconColor,
+                    NumOfAccounts = platform.Accounts.Count!
+                };
+                return StatusCode(StatusCodes.Status201Created, response);
             }
             return BadRequest();
         }
@@ -64,5 +77,28 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             };
             return Ok(response);
         }
+
+        [HttpPut]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> UpdatePlatform([FromBody] DtoUpdatePlatformRequest request)
+        {
+            string token = Request.Headers["Authorization"]!;
+            string userEmail = _jwtService.GetEmailFromToken(token)!;
+            Platform platform = new Platform
+            {
+                Id = request.Id,
+                PlatformName = request.PlatformName,
+                IconColor = request.IconColor
+            };
+
+            if (await _platformService.UpdatePlatformAsync(platform, userEmail))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        // TODO add get platform by id method that returns a platform with its accounts, 
+        // TODO add get all platforms with accounts method
     }
 }

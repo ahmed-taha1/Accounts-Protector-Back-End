@@ -5,10 +5,10 @@ namespace AccountsProtector.AccountsProtector.Core.ServiceContracts
 {
     public interface IPlatformService
     {
-        Task<bool> AddPlatformAsync(DtoAddPlatformRequest request, string userEmail);
+        Task<bool> AddPlatformAsync(Platform request, string userEmail);
         Task<ICollection<Platform>> GetAllPlatforms(string userEmail);
-        Task<Platform> GetAllPlatformsWithAccounts(string userEmail);
-        Task<Platform> GetPlatformByIdWithAccounts(string platformId);
+        Task<Platform> GetPlatformById(int platformId);
         Task<bool> DeletePlatformAsync(int id, string userEmail);
+        Task<bool> UpdatePlatformAsync(Platform platform, string userEmail);
     }
 }

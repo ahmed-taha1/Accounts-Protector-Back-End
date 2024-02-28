@@ -13,17 +13,12 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> AddPlatformAsync(DtoAddPlatformRequest request, string userEmail)
+        public async Task<bool> AddPlatformAsync(Platform platform, string userEmail)
         {
             User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
             if (user != null)
             {
-                Platform platform = new Platform
-                {
-                    UserId = user.Id,
-                    PlatformName = request.PlatformName,
-                    IconColor = request.IconColor,
-                };
+                platform.UserId = user.Id;
                 await _unitOfWork.Platforms.InsertAsync(platform);
                 await _unitOfWork.SaveAsync();
                 return true;
@@ -34,18 +29,14 @@ namespace AccountsProtector.AccountsProtector.Core.Services
         public async Task<ICollection<Platform>> GetAllPlatforms(string userEmail)
         {
             User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
-            IEnumerable<Platform> platforms = await _unitOfWork.Platforms.SelectListByMatchAsync(p => p.UserId == user!.Id, new List<string>{"Accounts"});
+            IEnumerable<Platform> platforms = await _unitOfWork.Platforms.SelectListByMatchAsync(p => p.UserId == user!.Id, "Accounts");
             return platforms.ToList();
         }
 
-        public Task<Platform> GetAllPlatformsWithAccounts(string userEmail)
+        public async Task<Platform> GetPlatformById(int platformId)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Platform> GetPlatformByIdWithAccounts(string platformId)
-        {
-            throw new NotImplementedException();
+            Platform platform = await _unitOfWork.Platforms.GetByIdAsync(platformId, "Accounts");
+            return platform;
         }
 
         public async Task<bool> DeletePlatformAsync(int id, string userEmail)
@@ -55,6 +46,20 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             if (platform != null && platform.UserId == user.Id)
             {
                 await _unitOfWork.Platforms.DeleteAsync(platform);
+                await _unitOfWork.SaveAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> UpdatePlatformAsync(Platform newEntity, string userEmail)
+        {
+            User user = (await _unitOfWork.Users.FindByEmailAsync(userEmail))!;
+            Platform? oldEntity = await _unitOfWork.Platforms.GetByIdAsync(newEntity.Id);
+            if (oldEntity != null && oldEntity.UserId == user.Id)
+            {
+                newEntity.UserId = user.Id;
+                await _unitOfWork.Platforms.UpdateAsync(oldEntity, newEntity);
                 await _unitOfWork.SaveAsync();
                 return true;
             }

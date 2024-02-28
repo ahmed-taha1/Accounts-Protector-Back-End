@@ -28,4 +28,12 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         public string? IconColor { get; set; }
         public int? NumOfAccounts { get; set; }
     }
+
+    public class DtoUpdatePlatformRequest
+    {
+        [Required(ErrorMessage = "id is required")]
+        public int Id { get; set; }
+        public string? PlatformName { get; set; }
+        public string? IconColor { get; set; }
+    }
 }

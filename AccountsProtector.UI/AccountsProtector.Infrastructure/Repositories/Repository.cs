@@ -33,6 +33,23 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             return await _db.Set<T>().FindAsync(id);
         }
 
+        public async Task<T> GetByIdAsync(int id, params string[] joins)
+        {
+            // Find the entity by its primary key
+            T entity = await _db.Set<T>().FindAsync(id);
+
+            // If the entity is found and joins are specified, manually load related entities
+            if (entity != null && joins.Any())
+            {
+                foreach (var join in joins)
+                {
+                    await _db.Entry(entity).Reference(join).LoadAsync();
+                }
+            }
+
+            return entity;
+        }
+
         public async Task InsertAsync(T entity)
         {
             await _db.Set<T>().AddAsync(entity);
@@ -64,7 +81,7 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             return await _db.Set<T>().SingleOrDefaultAsync(match);
         }
 
-        public async Task<T> SelectByMatchAsync(Expression<Func<T, bool>> match, List<string> joins)
+        public async Task<T> SelectByMatchAsync(Expression<Func<T, bool>> match, params string[] joins)
         {
             IQueryable<T> query = _db.Set<T>();
 
@@ -83,7 +100,7 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             return await _db.Set<T>().Where(match).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match, List<string> joins)
+        public async Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match, params string[] joins)
         {
             IQueryable<T> query = _db.Set<T>();
 
