@@ -8,7 +8,6 @@ namespace AccountsProtector.AccountsProtector.Core.Services
     public class AccountService : IAccountService
     {
         private readonly IUnitOfWork _unitOfWork;
-
         public AccountService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -28,8 +27,8 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                     => new AccountAttribute
                     {
                         AccountId = account.Id,
-                        Name = field.Key,
-                        Value = field.Value
+                        Name = EncryptionHelper.Encrypt(field.Key),
+                        Value = EncryptionHelper.Encrypt(field.Value)
                     }).ToList();
 
                 await _unitOfWork.SaveAsync();
@@ -53,8 +52,8 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                         AccountId = a.Id,
                         AccountName = a.AccountName,
                         PlatformId = a.PlatformId,
-                        AccountFields = a.AccountAttributes.Select(aa
-                                => new KeyValuePair<string, string>(aa.Name, aa.Value))
+                        AccountFields = a.AccountAttributes!.Select(aa
+                                => new KeyValuePair<string, string>(EncryptionHelper.Decrypt(aa.Name!), EncryptionHelper.Decrypt(aa.Value!)))
                             .ToDictionary(kv => kv.Key, kv => kv.Value)
                     }).ToList()
                 };

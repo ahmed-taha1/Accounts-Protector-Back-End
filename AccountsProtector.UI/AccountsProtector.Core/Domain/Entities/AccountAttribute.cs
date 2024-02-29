@@ -8,7 +8,7 @@ namespace AccountsProtector.AccountsProtector.Core.Domain.Entities
         [Key]
         public int Id { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(500)]
         public string? Name { get; set; }
         [Required]
         [StringLength(500)]
