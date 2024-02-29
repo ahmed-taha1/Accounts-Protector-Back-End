@@ -21,9 +21,8 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> AddPlatform([FromBody] DtoAddPlatformRequest request)
+        public async Task<IActionResult> CreatePlatform([FromBody] DtoCreatePlatformRequest request)
         {
-            // get the token from the header
             string token = Request.Headers["Authorization"]!;
             string userEmail = _jwtService.GetEmailFromToken(token)!;
 
@@ -32,14 +31,12 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 PlatformName = request.PlatformName,
                 IconColor = request.IconColor
             };
-            if (await _platformService.AddPlatformAsync(platform, userEmail))
+
+            if (await _platformService.CreatePlatformAsync(platform, userEmail))
             {
-                DtoPlatform response = new DtoPlatform
+                DtoCreatePlatformResponse response = new DtoCreatePlatformResponse
                 {
-                    Id = platform.Id,
-                    PlatformName = platform.PlatformName,
-                    IconColor = platform.IconColor,
-                    NumOfAccounts = platform.Accounts.Count!
+                    PlatformId = platform.Id,
                 };
                 return StatusCode(StatusCodes.Status201Created, response);
             }
@@ -51,8 +48,8 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         public async Task<IActionResult> DeletePlatform([FromBody] DtoDeletePlatformRequest request)
         {
             string token = Request.Headers["Authorization"]!;
-            string userEmail = _jwtService.GetEmailFromToken(token)!;
-            if (await _platformService.DeletePlatformAsync(request.Id, userEmail))
+            string userId = _jwtService.GetIdFromToken(token)!;
+            if (await _platformService.DeletePlatformAsync(request.Id, userId))
             {
                 return Ok();
             }
@@ -62,14 +59,14 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPlatforms()
         {
-            string token= Request.Headers["Authorization"]!;
-            string userEmail = _jwtService.GetEmailFromToken(token)!;
-            ICollection<Platform> platforms = await _platformService.GetAllPlatforms(userEmail);
+            string token = Request.Headers["Authorization"]!;
+            string userId = _jwtService.GetIdFromToken(token)!;
+            ICollection<Platform> platforms = await _platformService.GetAllPlatforms(userId);
             DtoGetAllPlatformsResponse response = new DtoGetAllPlatformsResponse
             {
                 Platforms = platforms.Select(p => new DtoPlatform
                 {
-                    Id = p.Id,
+                    PlatformId = p.Id,
                     PlatformName = p.PlatformName,
                     IconColor = p.IconColor,
                     NumOfAccounts = p.Accounts.Count
@@ -98,7 +95,80 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             return BadRequest();
         }
 
-        // TODO add get platform by id method that returns a platform with its accounts, 
+        [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> GetPlatform([FromBody] DtoGetPlatformRequest request)
+        {
+            string token = Request.Headers["Authorization"]!;
+            string userId = _jwtService.GetIdFromToken(token)!;
+            Platform? platform = await _platformService.GetPlatformByIdAsync(request.Id, userId);
+            if (platform != null)
+            {
+                DtoPlatform response = new DtoPlatform()
+                {
+                    PlatformId = platform.Id,
+                    PlatformName = platform.PlatformName,
+                    IconColor = platform.IconColor,
+                    NumOfAccounts = platform.Accounts.Count,
+                };
+                return Ok(response);
+            }
+            return BadRequest();
+        }
+
+        // TODO solve the issue of accounts attributes join table
+        [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> GetPlatformWithAccounts([FromBody] DtoGetPlatformRequest request,
+            [FromServices] IAccountService accountService)
+        {
+            string token = Request.Headers["Authorization"]!;
+            string userId = _jwtService.GetIdFromToken(token)!;
+            Platform? platform = await _platformService.GetPlatformByIdAsync(request.Id, userId);
+            if (platform != null)
+            {
+                DtoPlatformWithAccounts response = new DtoPlatformWithAccounts
+                {
+                    PlatformId = platform.Id,
+                    PlatformName = platform.PlatformName,
+                    IconColor = platform.IconColor,
+                    NumOfAccounts = platform.Accounts.Count,
+                };
+                DtoGetAccountsByPlatformIdResponse? accountsResponse =
+                    await accountService.GetAccountsByPlatformIdAsync(platform.Id, userId);
+                response.Accounts = accountsResponse;
+                return Ok(response);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> GetAllPlatformsWithAccounts([FromServices] IAccountService accountService)
+        {
+            string token = Request.Headers["Authorization"]!;
+            string userId = _jwtService.GetIdFromToken(token)!;
+            ICollection<Platform> platforms = await _platformService.GetAllPlatforms(userId);
+
+            DtoGetAllPlatformsWithAccountsResponse response = new DtoGetAllPlatformsWithAccountsResponse
+            {
+                Platforms = platforms.Select(p => new DtoPlatformWithAccounts
+                {
+                    PlatformId = p.Id,
+                    PlatformName = p.PlatformName,
+                    IconColor = p.IconColor,
+                    NumOfAccounts = p.Accounts!.Count,
+                }).ToList()
+            };
+
+            foreach (DtoPlatformWithAccounts platform in response.Platforms)
+            {
+                DtoGetAccountsByPlatformIdResponse? accountsResponse =
+                    await accountService.GetAccountsByPlatformIdAsync(platform.PlatformId, userId);
+                platform.Accounts = accountsResponse;
+            }
+            return Ok(response);
+        }
         // TODO add get all platforms with accounts method
     }
 }

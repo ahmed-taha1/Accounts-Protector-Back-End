@@ -2,12 +2,23 @@
 
 namespace AccountsProtector.AccountsProtector.Core.DTO
 {
-    public class DtoAddPlatformRequest
+    public class DtoGetPlatformRequest
+    {
+        [Required(ErrorMessage = "id is required")]
+        public int Id { get; set; }
+    }
+
+    public class DtoCreatePlatformRequest
     {
         [Required(ErrorMessage = "platform name is required")]
         public string? PlatformName { get; set; }
         [Required(ErrorMessage = "icon color is required")]
         public string? IconColor { get; set; }
+    }
+
+    public class DtoCreatePlatformResponse
+    {
+        public int? PlatformId { get; set; }
     }
 
     public class DtoDeletePlatformRequest
@@ -23,10 +34,20 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
 
     public class DtoPlatform
     {
-        public int Id { get; set; }
+        public int PlatformId { get; set; }
         public string? PlatformName { get; set; }
         public string? IconColor { get; set; }
         public int? NumOfAccounts { get; set; }
+    }
+
+    public class DtoGetAllPlatformsWithAccountsResponse
+    {
+        public List<DtoPlatformWithAccounts> Platforms { get; set; }
+    }
+
+    public class DtoPlatformWithAccounts : DtoPlatform
+    {
+        public DtoGetAccountsByPlatformIdResponse? Accounts { get; set; }
     }
 
     public class DtoUpdatePlatformRequest

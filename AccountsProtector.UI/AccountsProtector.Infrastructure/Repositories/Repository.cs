@@ -43,10 +43,9 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             {
                 foreach (var join in joins)
                 {
-                    await _db.Entry(entity).Reference(join).LoadAsync();
+                    await _db.Entry(entity).Collection(join).LoadAsync();
                 }
             }
-
             return entity;
         }
 

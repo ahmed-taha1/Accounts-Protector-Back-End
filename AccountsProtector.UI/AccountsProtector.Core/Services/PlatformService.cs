@@ -13,7 +13,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> AddPlatformAsync(Platform platform, string userEmail)
+        public async Task<bool> CreatePlatformAsync(Platform platform, string userEmail)
         {
             User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
             if (user != null)
@@ -26,24 +26,26 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             return false;
         }
 
-        public async Task<ICollection<Platform>> GetAllPlatforms(string userEmail)
+        public async Task<ICollection<Platform>> GetAllPlatforms(string userId)
         {
-            User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
-            IEnumerable<Platform> platforms = await _unitOfWork.Platforms.SelectListByMatchAsync(p => p.UserId == user!.Id, "Accounts");
+            IEnumerable<Platform> platforms = await _unitOfWork.Platforms.SelectListByMatchAsync(p => p.UserId.ToString() == userId, "Accounts");
             return platforms.ToList();
         }
-
-        public async Task<Platform> GetPlatformById(int platformId)
+        
+        public async Task<Platform?> GetPlatformByIdAsync(int platformId, string userId)
         {
-            Platform platform = await _unitOfWork.Platforms.GetByIdAsync(platformId, "Accounts");
+            Platform? platform = await _unitOfWork.Platforms.GetByIdAsync(platformId, "Accounts");
+            if (platform == null || platform.UserId.ToString() != userId)
+            {
+                return null;
+            }
             return platform;
         }
 
-        public async Task<bool> DeletePlatformAsync(int id, string userEmail)
+        public async Task<bool> DeletePlatformAsync(int id, string userId)
         {
-            User user = (await _unitOfWork.Users.FindByEmailAsync(userEmail))!;
             Platform platform = await _unitOfWork.Platforms.GetByIdAsync(id);
-            if (platform != null && platform.UserId == user.Id)
+            if (platform != null && platform.UserId.ToString() == userId)
             {
                 await _unitOfWork.Platforms.DeleteAsync(platform);
                 await _unitOfWork.SaveAsync();

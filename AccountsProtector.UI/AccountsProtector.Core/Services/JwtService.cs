@@ -25,6 +25,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             {
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
                 new Claim(ClaimTypes.Name, user.FirstName ?? string.Empty),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 // new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()), // makes the token unreadable and casues an error
             };
@@ -93,6 +94,30 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                 var email = jsonToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
                 return email;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public string? GetIdFromToken(string token)
+        {
+            try
+            {
+                token = token.Split(' ').LastOrDefault()!;
+                // Decode the token to retrieve its claims
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+
+                if (jsonToken == null)
+                {
+                    return null;
+                }
+
+                var id = jsonToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                return id;
             }
             catch (Exception ex)
             {
