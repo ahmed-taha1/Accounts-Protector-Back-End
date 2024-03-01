@@ -95,7 +95,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
         public async Task<bool> CheckPinAsync(string pin, string userEmail)
         {
             User? user = await _dp.Users.FindByEmailAsync(userEmail);
-            if (user != null && user.PinHash == null)
+            if (user != null && user.PinHash != null)
             {
                 String hashedPin = HashHelper.Hash(pin);
                 return user.PinHash == hashedPin;
