@@ -109,7 +109,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                     PlatformId = platform.Id,
                     PlatformName = platform.PlatformName,
                     IconColor = platform.IconColor,
-                    NumOfAccounts = platform.Accounts.Count,
+                    NumOfAccounts = platform.Accounts!.Count,
                 };
                 return Ok(response);
             }
@@ -132,7 +132,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                     PlatformId = platform.Id,
                     PlatformName = platform.PlatformName,
                     IconColor = platform.IconColor,
-                    NumOfAccounts = platform.Accounts.Count,
+                    NumOfAccounts = platform.Accounts!.Count,
                 };
                 DtoGetAccountsByPlatformIdResponse? accountsResponse =
                     await accountService.GetAccountsByPlatformIdAsync(platform.Id, userId);
@@ -148,8 +148,11 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         {
             string token = Request.Headers["Authorization"]!;
             string userId = _jwtService.GetIdFromToken(token)!;
-            ICollection<Platform> platforms = await _platformService.GetAllPlatforms(userId);
-
+            ICollection<Platform?>? platforms = await _platformService.GetAllPlatforms(userId);
+            if (platforms == null)
+            {
+                return BadRequest(new DtoErrorsResponse { errors = new List<string> { "no platforms found found" } });
+            }
             DtoGetAllPlatformsWithAccountsResponse response = new DtoGetAllPlatformsWithAccountsResponse
             {
                 Platforms = platforms.Select(p => new DtoPlatformWithAccounts

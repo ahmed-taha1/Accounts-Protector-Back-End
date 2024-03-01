@@ -7,7 +7,7 @@ namespace AccountsProtector.AccountsProtector.Core.ServiceContracts
     {
         Task<IdentityResult> RegisterAsync(User user, string password);
         Task<bool> LoginAsync(string email, string password);
-        Task<User>? GetUserByEmailAsync(string email);
+        Task<User?>? GetUserByEmailAsync(string email);
         Task<bool> UpdatePasswordAsync(string oldPassword, string newPassword, string email);
         Task<bool> UpdatePasswordAsync(string newPassword, string email);
     }

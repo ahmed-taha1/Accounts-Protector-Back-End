@@ -13,12 +13,12 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             _db = db;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T?>> GetAllAsync()
         {
             return await _db.Set<T>().ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(params string[] joins)
+        public async Task<IEnumerable<T?>> GetAllAsync(params string[] joins)
         {
             IQueryable<T> query = _db.Set<T>();
             foreach (var join in joins)
@@ -28,12 +28,12 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(int id)
         {
             return await _db.Set<T>().FindAsync(id);
         }
 
-        public async Task<T> GetByIdAsync(int id, params string[] joins)
+        public async Task<T?> GetByIdAsync(int id, params string[] joins)
         {
             // Find the entity by its primary key
             T entity = await _db.Set<T>().FindAsync(id);
@@ -75,12 +75,12 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task<T> SelectByMatchAsync(Expression<Func<T, bool>> match)
+        public async Task<T?> SelectByMatchAsync(Expression<Func<T, bool>> match)
         {
             return await _db.Set<T>().SingleOrDefaultAsync(match);
         }
 
-        public async Task<T> SelectByMatchAsync(Expression<Func<T, bool>> match, params string[] joins)
+        public async Task<T?> SelectByMatchAsync(Expression<Func<T, bool>> match, params string[] joins)
         {
             IQueryable<T> query = _db.Set<T>();
 
@@ -94,12 +94,12 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
             return (await query.FirstOrDefaultAsync(match))!;
         }
 
-        public async Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match)
+        public async Task<IEnumerable<T?>?> SelectListByMatchAsync(Expression<Func<T, bool>> match)
         {
             return await _db.Set<T>().Where(match).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> SelectListByMatchAsync(Expression<Func<T, bool>> match, params string[] joins)
+        public async Task<IEnumerable<T?>?> SelectListByMatchAsync(Expression<Func<T, bool>> match, params string[] joins)
         {
             IQueryable<T> query = _db.Set<T>();
 

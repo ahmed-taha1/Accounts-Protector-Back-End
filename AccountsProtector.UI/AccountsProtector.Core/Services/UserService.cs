@@ -46,14 +46,14 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             return result.Succeeded;
         }
 
-        public async Task<User>? GetUserByEmailAsync(string email)
+        public async Task<User?>? GetUserByEmailAsync(string email)
         {
             return await _dp.Users.FindByEmailAsync(email);
         }
 
         public async Task<bool> UpdatePasswordAsync(string oldPassword, string newPassword, string email)
         {
-            User user = await _dp.Users.FindByEmailAsync(email);
+            User? user = await _dp.Users.FindByEmailAsync(email);
             if (user == null)
             {
                 return false;

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.Identity.Client;
 
 namespace AccountsProtector.AccountsProtector.Core.DTO
 {
@@ -12,6 +13,13 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         public Dictionary<String, String>? AccountFields { get; set; }
     }
 
+    public class DtoUpdateAccountRequest
+    {
+        [Required(ErrorMessage = "Account id is required")]
+        public int? AccountId { get; set; }
+        public String? AccountName { get; set; }
+        public Dictionary<String, String>? AccountFields { get; set; }
+    }
 
     public class DtoCreateAccountRequest
     {
@@ -22,7 +30,7 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         public Dictionary<String, String>? AccountFields { get; set; }
     }
 
-    public class DtoCreateAccountResponse
+    public class DtoAccountId
     {
         public int? AccountId { get; set; }
     }

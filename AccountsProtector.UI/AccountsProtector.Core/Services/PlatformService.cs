@@ -26,9 +26,13 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             return false;
         }
 
-        public async Task<ICollection<Platform>> GetAllPlatforms(string userId)
+        public async Task<ICollection<Platform?>?> GetAllPlatforms(string userId)
         {
-            IEnumerable<Platform> platforms = await _unitOfWork.Platforms.SelectListByMatchAsync(p => p.UserId.ToString() == userId, "Accounts");
+            IEnumerable<Platform?>? platforms = await _unitOfWork.Platforms.SelectListByMatchAsync(p => p.UserId.ToString() == userId, "Accounts");
+            if (platforms == null)
+            {
+                return null;
+            }
             return platforms.ToList();
         }
         
@@ -44,7 +48,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
 
         public async Task<bool> DeletePlatformAsync(int id, string userId)
         {
-            Platform platform = await _unitOfWork.Platforms.GetByIdAsync(id);
+            Platform? platform = await _unitOfWork.Platforms.GetByIdAsync(id);
             if (platform != null && platform.UserId.ToString() == userId)
             {
                 await _unitOfWork.Platforms.DeleteAsync(platform);
