@@ -29,7 +29,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                     => new AccountAttribute
                     {
                         AccountId = account.Id,
-                        Name = EncryptionHelper.Encrypt(field.Key),
+                        Key = EncryptionHelper.Encrypt(field.Key),
                         Value = EncryptionHelper.Encrypt(field.Value)
                     }).ToList();
 
@@ -57,7 +57,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                             AccountName = a.AccountName,
                             PlatformId = a.PlatformId,
                             AccountFields = a.AccountAttributes!.Select(aa
-                                    => new KeyValuePair<string, string>(EncryptionHelper.Decrypt(aa.Name!),
+                                    => new KeyValuePair<string, string>(EncryptionHelper.Decrypt(aa.Key!),
                                         EncryptionHelper.Decrypt(aa.Value!)))
                                 .ToDictionary(kv => kv.Key, kv => kv.Value)
                         }).ToList()
@@ -83,7 +83,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                     AccountName = account.AccountName,
                     PlatformId = account.PlatformId,
                     AccountFields = account.AccountAttributes!.Select(aa
-                            => new KeyValuePair<string, string>(EncryptionHelper.Decrypt(aa.Name!),
+                            => new KeyValuePair<string, string>(EncryptionHelper.Decrypt(aa.Key!),
                                 EncryptionHelper.Decrypt(aa.Value!)))
                         .ToDictionary(kv => kv.Key, kv => kv.Value)
                 };
@@ -130,7 +130,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                             bool isFieldExist = false;
                             foreach (var accountAttribute in account.AccountAttributes!)
                             {
-                                if (EncryptionHelper.Decrypt(accountAttribute.Name!) == field.Key)
+                                if (EncryptionHelper.Decrypt(accountAttribute.Key!) == field.Key)
                                 {
                                     isFieldExist = true;
                                     accountAttribute.Value = EncryptionHelper.Encrypt(field.Value);
@@ -142,7 +142,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                                 account.AccountAttributes!.Add(new AccountAttribute
                                 {
                                     AccountId = account.Id,
-                                    Name = EncryptionHelper.Encrypt(field.Key),
+                                    Key = EncryptionHelper.Encrypt(field.Key),
                                     Value = EncryptionHelper.Encrypt(field.Value)
                                 });
                             }

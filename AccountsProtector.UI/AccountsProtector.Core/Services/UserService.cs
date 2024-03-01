@@ -1,5 +1,6 @@
 ﻿using AccountsProtector.AccountsProtector.Core.Domain.Entities;
 using AccountsProtector.AccountsProtector.Core.Domain.UnitOfWorkContracts;
+using AccountsProtector.AccountsProtector.Core.Helpers;
 using AccountsProtector.AccountsProtector.Core.ServiceContracts;
 using Microsoft.AspNetCore.Identity;
 
@@ -46,7 +47,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             return result.Succeeded;
         }
 
-        public async Task<User?>? GetUserByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _dp.Users.FindByEmailAsync(email);
         }
@@ -77,6 +78,29 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             var result = await _dp.Users.ResetPasswordAsync(user, token, newPassword);
             await _dp.SaveAsync();
             return result.Succeeded;
+        }
+
+        public async Task<bool> SetPinAsync(string pin, string userEmail)
+        {
+            User? user = await _dp.Users.FindByEmailAsync(userEmail);
+            if (user != null && user.PinHash == null)
+            {
+                user.PinHash = HashHelper.Hash(pin);
+                await _dp.SaveAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> CheckPinAsync(string pin, string userEmail)
+        {
+            User? user = await _dp.Users.FindByEmailAsync(userEmail);
+            if (user != null && user.PinHash == null)
+            {
+                String hashedPin = HashHelper.Hash(pin);
+                return user.PinHash == hashedPin;
+            }
+            return false;
         }
     }
 }

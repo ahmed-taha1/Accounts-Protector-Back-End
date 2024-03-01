@@ -13,7 +13,7 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         [MaxLength(50, ErrorMessage = "first name Should be less than 50 char")]
         public string? FirstName { get; set; }
 
-        [MaxLength(50, ErrorMessage = "Last Name Should be less than 50 char")]
+        [MaxLength(50, ErrorMessage = "Last Key Should be less than 50 char")]
         public string? LastName { get; set; }
 
         [Required(ErrorMessage = "password is required")]
