@@ -61,15 +61,15 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         {
             string token = Request.Headers["Authorization"]!;
             string userId = _jwtService.GetIdFromToken(token)!;
-            ICollection<Platform> platforms = await _platformService.GetAllPlatforms(userId);
+            ICollection<Platform?>? platforms = await _platformService.GetAllPlatforms(userId);
             DtoGetAllPlatformsResponse response = new DtoGetAllPlatformsResponse
             {
-                Platforms = platforms.Select(p => new DtoPlatform
+                Platforms = platforms!.Select(p => new DtoPlatform
                 {
                     PlatformId = p.Id,
                     PlatformName = p.PlatformName,
                     IconColor = p.IconColor,
-                    NumOfAccounts = p.Accounts.Count
+                    NumOfAccounts = p.Accounts!.Count
                 }).ToList()
             };
             return Ok(response);
@@ -92,7 +92,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             {
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest(new DtoErrorsResponse { errors = new List<string> { "platform not found or error happened" } });
         }
 
         [HttpPost]
@@ -113,10 +113,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 };
                 return Ok(response);
             }
-            return BadRequest();
+            return BadRequest(new DtoErrorsResponse { errors = new List<string> { "platform not found" } });
         }
 
-        // TODO solve the issue of accounts attributes join table
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> GetPlatformWithAccounts([FromBody] DtoGetPlatformRequest request,
@@ -139,7 +138,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 response.Accounts = accountsResponse;
                 return Ok(response);
             }
-            return BadRequest();
+            return BadRequest(new DtoErrorsResponse { errors = new List<string> { "platform not found" } });
         }
 
         [HttpGet]
@@ -172,6 +171,5 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             }
             return Ok(response);
         }
-        // TODO add get all platforms with accounts method
     }
 }
