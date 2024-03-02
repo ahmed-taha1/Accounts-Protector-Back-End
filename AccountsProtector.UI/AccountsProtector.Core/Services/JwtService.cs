@@ -29,7 +29,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 // new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()), // makes the token unreadable and casues an error
             };
-            SymmetricSecurityKey Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
+            SymmetricSecurityKey Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]!));
             SigningCredentials creds = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);
             JwtSecurityToken jwt = new JwtSecurityToken(
                 issuer: _configuration["JWT:Issuer"],
@@ -45,7 +45,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
         public bool ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
+            var key = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]!);
 
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -95,7 +95,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
 
                 return email;
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
@@ -119,7 +119,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
 
                 return id;
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }

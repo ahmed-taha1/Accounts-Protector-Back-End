@@ -35,7 +35,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 PhoneNumber = request.PhoneNumber,
             };
 
-            IdentityResult result = await _userService.RegisterAsync(user, request.Password);
+            IdentityResult result = await _userService.RegisterAsync(user, request.Password!);
 
             // if registration failed
             if (!result.Succeeded)
@@ -52,9 +52,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Login([FromBody] DtoLoginRequest request, [FromServices] IConfiguration configuration)
         {
-            User? user = await _userService.GetUserByEmailAsync(request.Email);
+            User? user = await _userService.GetUserByEmailAsync(request.Email!);
 
-            if (user == null || !await _userService.LoginAsync(user.Email, request.Password))
+            if (user == null || !await _userService.LoginAsync(user.Email!, request.Password!))
             {
                 return BadRequest(new DtoErrorsResponse
                 {
@@ -78,9 +78,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] DtoChangePasswordRequest request)
         {
             var token = HttpContext.Request.Headers["Authorization"];
-            string email = _jwtService.GetEmailFromToken(token);
+            string? email = _jwtService.GetEmailFromToken(token!);
 
-            if (email == null || !await _userService.UpdatePasswordAsync(request.OldPassword, request.NewPassword, email))
+            if (email == null || !await _userService.UpdatePasswordAsync(request.OldPassword!, request.NewPassword!, email))
             {
                 return BadRequest(
                     new DtoErrorsResponse
@@ -100,7 +100,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             string token = authorizationHeader.Split(' ').LastOrDefault()!;
             string email = _jwtService.GetEmailFromToken(token)!;
 
-            if (await _userService.UpdatePasswordAsync(request.NewPassword, email))
+            if (await _userService.UpdatePasswordAsync(request.NewPassword!, email))
             {
                 return Ok();
             }
@@ -111,6 +111,24 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 });
         }
 
+        [HttpDelete]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> RemoveAccount([FromBody] DtoRemoveAccountRequest request)
+        {
+            string authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault()!;
+            string token = authorizationHeader.Split(' ').LastOrDefault()!;
+            string email = _jwtService.GetEmailFromToken(token)!;
+
+            if (await _userService.RemoveAccountAsync(request.Password!, email))
+            {
+                return Ok();
+            }
+            return BadRequest(
+                new DtoErrorsResponse 
+                { 
+                    errors = new List<string> { "wrong password" }
+                });
+        }
         // [HttpPost]
         // [AllowAnonymous]
         // public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)

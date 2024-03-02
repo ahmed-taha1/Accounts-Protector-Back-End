@@ -12,5 +12,6 @@ namespace AccountsProtector.AccountsProtector.Core.ServiceContracts
         Task<bool> UpdatePasswordAsync(string newPassword, string email);
         Task<bool> SetPinAsync(string pin, string userEmail);
         Task<bool> CheckPinAsync(string pin, string userEmail);
+        Task<bool> RemoveAccountAsync(string password, string email);
     }
 }

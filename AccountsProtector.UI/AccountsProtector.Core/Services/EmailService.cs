@@ -51,7 +51,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                 await _unitOfWork.SaveAsync();
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }

@@ -66,7 +66,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             {
                 Platforms = platforms!.Select(p => new DtoPlatform
                 {
-                    PlatformId = p.Id,
+                    PlatformId = p!.Id,
                     PlatformName = p.PlatformName,
                     IconColor = p.IconColor,
                     NumOfAccounts = p.Accounts!.Count
@@ -156,7 +156,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             {
                 Platforms = platforms.Select(p => new DtoPlatformWithAccounts
                 {
-                    PlatformId = p.Id,
+                    PlatformId = p!.Id,
                     PlatformName = p.PlatformName,
                     IconColor = p.IconColor,
                     NumOfAccounts = p.Accounts!.Count,

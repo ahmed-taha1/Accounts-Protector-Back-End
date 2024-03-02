@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AccountsProtector.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240301200837_pin-field-added-and-account-attr-name-changed-to-key")]
-    partial class pinfieldaddedandaccountattrnamechangedtokey
+    [Migration("20240301204217_pin_field_added_and_account_attr_name_changed_to_key")]
+    partial class pin_field_added_and_account_attr_name_changed_to_key
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

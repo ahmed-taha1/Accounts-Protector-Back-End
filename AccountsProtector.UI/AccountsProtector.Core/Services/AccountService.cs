@@ -25,13 +25,16 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                     PlatformId = (int)request.PlatformId!
                 };
                 await _unitOfWork.Accounts.InsertAsync(account);
-                account.AccountAttributes = request.AccountFields.Select(field
-                    => new AccountAttribute
-                    {
-                        AccountId = account.Id,
-                        Key = EncryptionHelper.Encrypt(field.Key),
-                        Value = EncryptionHelper.Encrypt(field.Value)
-                    }).ToList();
+                if (request.AccountFields != null)
+                {
+                    account.AccountAttributes = request.AccountFields.Select(field
+                        => new AccountAttribute
+                        {
+                            AccountId = account.Id,
+                            Key = EncryptionHelper.Encrypt(field.Key),
+                            Value = EncryptionHelper.Encrypt(field.Value)
+                        }).ToList();
+                }
 
                 await _unitOfWork.SaveAsync();
                 return account.Id;
@@ -53,7 +56,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                     {
                         Accounts = accounts.Select(a => new DtoAccount
                         {
-                            AccountId = a.Id,
+                            AccountId = a!.Id,
                             AccountName = a.AccountName,
                             PlatformId = a.PlatformId,
                             AccountFields = a.AccountAttributes!.Select(aa

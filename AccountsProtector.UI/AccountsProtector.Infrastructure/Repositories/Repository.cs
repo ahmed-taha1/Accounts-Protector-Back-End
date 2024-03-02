@@ -36,7 +36,7 @@ namespace AccountsProtector.AccountsProtector.Infrastructure.Repositories
         public async Task<T?> GetByIdAsync(int id, params string[] joins)
         {
             // Find the entity by its primary key
-            T entity = await _db.Set<T>().FindAsync(id);
+            T? entity = await _db.Set<T>().FindAsync(id);
 
             // If the entity is found and joins are specified, manually load related entities
             if (entity != null && joins.Any())

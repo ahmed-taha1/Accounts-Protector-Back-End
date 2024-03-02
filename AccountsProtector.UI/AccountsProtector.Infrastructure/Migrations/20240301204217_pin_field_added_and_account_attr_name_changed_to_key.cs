@@ -5,7 +5,7 @@
 namespace AccountsProtector.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class pinfieldaddedandaccountattrnamechangedtokey : Migration
+    public partial class pin_field_added_and_account_attr_name_changed_to_key : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

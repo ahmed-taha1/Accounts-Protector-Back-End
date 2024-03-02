@@ -8,15 +8,15 @@ namespace AccountsProtector.AccountsProtector.Core.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUnitOfWork _dp;
+        private readonly IUnitOfWork _unitOfWork;
 
         public UserService(IUnitOfWork unitOfWork)
         {
-            _dp = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
         public async Task<IdentityResult> RegisterAsync(User user, string password)
         {
-            IdentityResult result = await _dp.Users.CreateAsync(user, password);
+            IdentityResult result = await _unitOfWork.Users.CreateAsync(user, password);
             user.Platforms = new List<Platform>
             {
                 new Platform
@@ -38,35 +38,35 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                     IconColor = "fffbbe0d",
                 }
             };
-            await _dp.SaveAsync();
+            await _unitOfWork.SaveAsync();
             return result;
         }
         public async Task<bool> LoginAsync(string email, string password)
         {
-            SignInResult result = await _dp.SignInManager.PasswordSignInAsync(email, password, isPersistent:true, lockoutOnFailure: false);
+            SignInResult result = await _unitOfWork.SignInManager.PasswordSignInAsync(email, password, isPersistent:true, lockoutOnFailure: false);
             return result.Succeeded;
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return await _dp.Users.FindByEmailAsync(email);
+            return await _unitOfWork.Users.FindByEmailAsync(email);
         }
 
         public async Task<bool> UpdatePasswordAsync(string oldPassword, string newPassword, string email)
         {
-            User? user = await _dp.Users.FindByEmailAsync(email);
+            User? user = await _unitOfWork.Users.FindByEmailAsync(email);
             if (user == null)
             {
                 return false;
             }
-            var result = await _dp.Users.ChangePasswordAsync(user, oldPassword, newPassword);
-            await _dp.SaveAsync();
+            var result = await _unitOfWork.Users.ChangePasswordAsync(user, oldPassword, newPassword);
+            await _unitOfWork.SaveAsync();
             return result.Succeeded;
         }
 
         public async Task<bool> UpdatePasswordAsync(string newPassword, string email)
         {
-            var user = await _dp.Users.FindByEmailAsync(email);
+            var user = await _unitOfWork.Users.FindByEmailAsync(email);
 
             if (user == null)
             {
@@ -74,19 +74,19 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                 return false;
             }
 
-            var token = await _dp.Users.GeneratePasswordResetTokenAsync(user);
-            var result = await _dp.Users.ResetPasswordAsync(user, token, newPassword);
-            await _dp.SaveAsync();
+            var token = await _unitOfWork.Users.GeneratePasswordResetTokenAsync(user);
+            var result = await _unitOfWork.Users.ResetPasswordAsync(user, token, newPassword);
+            await _unitOfWork.SaveAsync();
             return result.Succeeded;
         }
 
         public async Task<bool> SetPinAsync(string pin, string userEmail)
         {
-            User? user = await _dp.Users.FindByEmailAsync(userEmail);
+            User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
             if (user != null && user.PinHash == null)
             {
                 user.PinHash = HashHelper.Hash(pin);
-                await _dp.SaveAsync();
+                await _unitOfWork.SaveAsync();
                 return true;
             }
             return false;
@@ -94,11 +94,23 @@ namespace AccountsProtector.AccountsProtector.Core.Services
 
         public async Task<bool> CheckPinAsync(string pin, string userEmail)
         {
-            User? user = await _dp.Users.FindByEmailAsync(userEmail);
+            User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
             if (user != null && user.PinHash != null)
             {
                 String hashedPin = HashHelper.Hash(pin);
                 return user.PinHash == hashedPin;
+            }
+            return false;
+        }
+
+        public async Task<bool> RemoveAccountAsync(string password, string email)
+        {
+            User? user = await _unitOfWork.Users.FindByEmailAsync(email);
+            if (user != null && await _unitOfWork.Users.CheckPasswordAsync(user, password))
+            {
+                await _unitOfWork.Users.DeleteAsync(user);
+                await _unitOfWork.SaveAsync();
+                return true;
             }
             return false;
         }

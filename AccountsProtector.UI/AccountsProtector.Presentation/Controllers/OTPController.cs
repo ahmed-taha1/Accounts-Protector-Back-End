@@ -27,7 +27,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> SendOTP([FromBody] DtoSendOTPRequest request)
         {
-            User? user = await _userService.GetUserByEmailAsync(request.Email);
+            User? user = await _userService.GetUserByEmailAsync(request.Email!);
             if (user == null)
             {
                 return BadRequest(
@@ -36,7 +36,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                         errors = new List<string> { "Email not found" }
                     });
             }
-            if (await _emailService.SendOTP(request.Email))
+            if (await _emailService.SendOTP(request.Email!))
             {
                 return Ok();
             }
@@ -52,7 +52,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> VerifyOTP([FromBody] DtoVerifyOTPRequest request)
         {
-            User? user = await _userService.GetUserByEmailAsync(request.Email);
+            User? user = await _userService.GetUserByEmailAsync(request.Email!);
 
             if (user == null)
             {
@@ -63,7 +63,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                     });
             }
 
-            if (await _emailService.VerifyOTP(request.Email, request.OTPCode ?? -1))
+            if (await _emailService.VerifyOTP(request.Email!, request.OTPCode ?? -1))
             {
                 var response = new DtoVerifyOTPResponse
                 {

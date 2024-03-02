@@ -53,4 +53,10 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         [Compare(nameof(NewPassword), ErrorMessage = "passwords do not match")]
         public string? NewPasswordRepeat { get; set; }
     }
+
+    public class DtoRemoveAccountRequest
+    {
+        [Required(ErrorMessage = "password is required")]
+        public string? Password { get; set; }
+    }
 }

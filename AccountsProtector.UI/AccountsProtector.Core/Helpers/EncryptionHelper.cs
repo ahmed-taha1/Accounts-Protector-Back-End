@@ -53,46 +53,44 @@ public static class EncryptionHelper
         byte[] keyBytes = Encoding.UTF8.GetBytes(Key);
         byte[] iv = new byte[BlockSize / 8]; // IV size is same as block size (128 bits for AES)
 
-        using (Aes aesAlg = Aes.Create())
+        using Aes aesAlg = Aes.Create();
+        aesAlg.KeySize = KeySize;
+        aesAlg.BlockSize = BlockSize;
+        aesAlg.Mode = Mode;
+        aesAlg.Padding = Padding;
+
+        // Ensure key is correct size
+        byte[] keyBytesCorrectSize = new byte[aesAlg.KeySize / 8];
+        Buffer.BlockCopy(keyBytes, 0, keyBytesCorrectSize, 0, Math.Min(keyBytes.Length, keyBytesCorrectSize.Length));
+        aesAlg.Key = keyBytesCorrectSize;
+
+        aesAlg.IV = iv;
+
+        try
         {
-            aesAlg.KeySize = KeySize;
-            aesAlg.BlockSize = BlockSize;
-            aesAlg.Mode = Mode;
-            aesAlg.Padding = Padding;
+            // Attempt to decode the cipherText parameter as a Base64 string
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
 
-            // Ensure key is correct size
-            byte[] keyBytesCorrectSize = new byte[aesAlg.KeySize / 8];
-            Buffer.BlockCopy(keyBytes, 0, keyBytesCorrectSize, 0, Math.Min(keyBytes.Length, keyBytesCorrectSize.Length));
-            aesAlg.Key = keyBytesCorrectSize;
+            // Create a decryptor to perform the stream transform
+            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-            aesAlg.IV = iv;
-
-            try
+            // Create the streams used for decryption
+            using (MemoryStream msDecrypt = new MemoryStream(cipherBytes))
             {
-                // Attempt to decode the cipherText parameter as a Base64 string
-                byte[] cipherBytes = Convert.FromBase64String(cipherText);
-
-                // Create a decryptor to perform the stream transform
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                // Create the streams used for decryption
-                using (MemoryStream msDecrypt = new MemoryStream(cipherBytes))
+                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                 {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                     {
-                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                        {
-                            // Read the decrypted bytes from the decrypting stream and place them in a string
-                            return srDecrypt.ReadToEnd();
-                        }
+                        // Read the decrypted bytes from the decrypting stream and place them in a string
+                        return srDecrypt.ReadToEnd();
                     }
                 }
             }
-            catch (FormatException)
-            {
-                // If the cipherText parameter is not a valid Base64 string, return it as is
-                return cipherText;
-            }
+        }
+        catch (FormatException)
+        {
+            // If the cipherText parameter is not a valid Base64 string, return it as is
+            return cipherText;
         }
     }
 }
