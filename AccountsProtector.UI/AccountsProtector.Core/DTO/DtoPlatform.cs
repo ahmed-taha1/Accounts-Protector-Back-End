@@ -42,12 +42,12 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
 
     public class DtoGetAllPlatformsWithAccountsResponse
     {
-        public List<DtoPlatformWithAccounts> Platforms { get; set; }
+        public List<DtoPlatformWithAccounts>? Platforms { get; set; }
     }
 
     public class DtoPlatformWithAccounts : DtoPlatform
     {
-        public DtoGetAccountsByPlatformIdResponse? Accounts { get; set; }
+        public ICollection<DtoAccount?>? Accounts { get; set; }
     }
 
     public class DtoUpdatePlatformRequest

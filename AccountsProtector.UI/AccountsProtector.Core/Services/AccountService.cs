@@ -42,7 +42,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             return -1;
         }
 
-        public async Task<DtoGetAccountsByPlatformIdResponse?> GetAccountsByPlatformIdAsync(int? requestPlatformId, string userId)
+        public async Task<ICollection<DtoAccount?>?> GetAccountsByPlatformIdAsync(int? requestPlatformId, string userId)
         {
             Platform? platform = await _unitOfWork.Platforms.GetByIdAsync((int)requestPlatformId!, nameof(AppDbContext.Accounts));
             if (platform != null && platform.UserId.ToString() == userId)
@@ -52,19 +52,16 @@ namespace AccountsProtector.AccountsProtector.Core.Services
                         nameof(AppDbContext.AccountAttributes));
                 if (accounts != null)
                 {
-                    return new DtoGetAccountsByPlatformIdResponse
+                    return accounts.Select(account => new DtoAccount
                     {
-                        Accounts = accounts.Select(a => new DtoAccount
-                        {
-                            AccountId = a!.Id,
-                            AccountName = a.AccountName,
-                            PlatformId = a.PlatformId,
-                            AccountFields = a.AccountAttributes!.Select(aa
-                                    => new KeyValuePair<string, string>(EncryptionHelper.Decrypt(aa.Key!),
-                                        EncryptionHelper.Decrypt(aa.Value!)))
-                                .ToDictionary(kv => kv.Key, kv => kv.Value)
-                        }).ToList()
-                    };
+                        AccountId = account!.Id,
+                        AccountName = account.AccountName,
+                        PlatformId = account.PlatformId,
+                        AccountFields = account.AccountAttributes!.Select(aa
+                                => new KeyValuePair<string, string>(EncryptionHelper.Decrypt(aa.Key!),
+                                    EncryptionHelper.Decrypt(aa.Value!)))
+                            .ToDictionary(kv => kv.Key, kv => kv.Value)
+                    }).ToList()!;
                 }
             }
             return null;

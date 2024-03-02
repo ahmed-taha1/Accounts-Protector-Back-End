@@ -43,7 +43,7 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
 
     public class DtoGetAccountsByPlatformIdResponse
     {
-        public List<DtoAccount>? Accounts { get; set; }
+        public ICollection<DtoAccount?>? Accounts { get; set; }
     }
 
 }

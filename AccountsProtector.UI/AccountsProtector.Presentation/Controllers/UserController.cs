@@ -129,6 +129,64 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                     errors = new List<string> { "wrong password" }
                 });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserPersonalData()
+        {
+            string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()!;
+            string email = _jwtService.GetEmailFromToken(token)!;
+            User? user = await _userService.GetUserByEmailAsync(email);
+            if (user != null)
+            {
+                DtoGetUserPersonalDataResponse response = new DtoGetUserPersonalDataResponse
+                {
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                };
+                return Ok(response);
+            }
+            return BadRequest(new DtoErrorsResponse
+            {
+                errors = new List<string> { "User not found" }
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUserData([FromServices] IPlatformService platformService, [FromServices] IAccountService accountService)
+        {
+            string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()!;
+            string email = _jwtService.GetEmailFromToken(token)!;
+            User? user = await _userService.GetUserByEmailAsync(email);
+            if (user != null)
+            {
+                DtoGetAllUserDataResponse response = new DtoGetAllUserDataResponse
+                {
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber
+                };
+                ICollection<Platform?>? platforms = await platformService.GetAllPlatforms(user.Id.ToString());
+                response.Platforms = platforms?.Select(p => new DtoPlatformWithAccounts
+                {
+                    PlatformId = p.Id,
+                    PlatformName = p.PlatformName,
+                    IconColor = p.IconColor,
+                    NumOfAccounts = p.Accounts!.Count
+                }).ToList();
+                foreach (var platform in response.Platforms!)
+                {
+                    platform.Accounts = await accountService.GetAccountsByPlatformIdAsync(platform.PlatformId, user.Id.ToString());
+                }
+                return Ok(response);
+            }
+            return BadRequest(new DtoErrorsResponse
+            {
+                errors = new List<string> { "User not found" }
+            });
+        }
         // [HttpPost]
         // [AllowAnonymous]
         // public async Task<IActionResult> IsEmailIsAlreadyRegistered(string email)

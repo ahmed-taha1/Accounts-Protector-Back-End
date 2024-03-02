@@ -43,9 +43,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         {
             string token = Request.Headers["Authorization"]!;
             string userId = _jwtService.GetIdFromToken(token)!;
-            DtoGetAccountsByPlatformIdResponse? response =
-                await _accountService.GetAccountsByPlatformIdAsync(request.PlatformId, userId);
-            if (response != null)
+            DtoGetAccountsByPlatformIdResponse? response = new DtoGetAccountsByPlatformIdResponse();
+            response.Accounts = await _accountService.GetAccountsByPlatformIdAsync(request.PlatformId, userId);
+            if (response.Accounts != null)
             {
                 return Ok(response);
             }

@@ -133,13 +133,12 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                     IconColor = platform.IconColor,
                     NumOfAccounts = platform.Accounts!.Count,
                 };
-                DtoGetAccountsByPlatformIdResponse? accountsResponse =
-                    await accountService.GetAccountsByPlatformIdAsync(platform.Id, userId);
-                response.Accounts = accountsResponse;
+                response.Accounts = await accountService.GetAccountsByPlatformIdAsync(platform.Id, userId);
                 return Ok(response);
             }
             return BadRequest(new DtoErrorsResponse { errors = new List<string> { "platform not found" } });
         }
+
 
         [HttpGet]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
@@ -165,9 +164,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
 
             foreach (DtoPlatformWithAccounts platform in response.Platforms)
             {
-                DtoGetAccountsByPlatformIdResponse? accountsResponse =
-                    await accountService.GetAccountsByPlatformIdAsync(platform.PlatformId, userId);
-                platform.Accounts = accountsResponse;
+                platform.Accounts = await accountService.GetAccountsByPlatformIdAsync(platform.PlatformId, userId);
             }
             return Ok(response);
         }

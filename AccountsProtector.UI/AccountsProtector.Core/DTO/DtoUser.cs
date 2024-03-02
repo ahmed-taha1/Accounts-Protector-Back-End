@@ -59,4 +59,17 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         [Required(ErrorMessage = "password is required")]
         public string? Password { get; set; }
     }
+
+    public class DtoGetUserPersonalDataResponse
+    {
+        public string? Email { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? PhoneNumber { get; set; }
+    }
+
+    public class DtoGetAllUserDataResponse : DtoGetUserPersonalDataResponse
+    {
+        public List<DtoPlatformWithAccounts>? Platforms { get; set; }
+    }
 }
