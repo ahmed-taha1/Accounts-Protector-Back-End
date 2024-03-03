@@ -1,6 +1,5 @@
 using AccountsProtector.AccountsProtector.Core.Domain.Entities;
 using AccountsProtector.AccountsProtector.Core.Domain.UnitOfWorkContracts;
-using AccountsProtector.AccountsProtector.Core.Helpers;
 using AccountsProtector.AccountsProtector.Core.ServiceContracts;
 using AccountsProtector.AccountsProtector.Core.Services;
 using AccountsProtector.AccountsProtector.Infrastructure.AppDbContext;

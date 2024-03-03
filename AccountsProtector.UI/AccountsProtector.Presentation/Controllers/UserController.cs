@@ -54,11 +54,19 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         {
             User? user = await _userService.GetUserByEmailAsync(request.Email!);
 
-            if (user == null || !await _userService.LoginAsync(user.Email!, request.Password!))
+            if (user == null)
             {
                 return BadRequest(new DtoErrorsResponse
                 {
-                    errors = new List<string>{"User name or password invalid"}
+                    errors = new List<string>{"email is not exist"}
+                });
+            }
+
+            if (!await _userService.LoginAsync(user.Email!, request.Password!))
+            {
+                return BadRequest(new DtoErrorsResponse
+                {
+                    errors = new List<string> { "wrong password" }
                 });
             }
 
@@ -68,7 +76,8 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Expiration = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration["JWT:EXPIRY_IN_DAYS"]))
+                Expiration = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration["JWT:EXPIRY_IN_DAYS"])),
+                IsPinSet = user.PinHash != null
             };
             return Ok(response);
         }
