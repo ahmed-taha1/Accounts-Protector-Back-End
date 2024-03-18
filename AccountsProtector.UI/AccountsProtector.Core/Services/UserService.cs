@@ -84,7 +84,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
         public async Task<bool> SetPinAsync(string pinHash, string userEmail)
         {
             var user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
-            if (user != null && !string.IsNullOrEmpty(user.PinHash))
+            if (user != null && string.IsNullOrEmpty(user.PinHash))
             {
                 user.PinHash = pinHash;
                 return true;
