@@ -5,15 +5,15 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
     public class DtoSetPinRequest
     {
         [Required(ErrorMessage = "pin is required")]
-        public string? Pin { get; set; }
+        public string? PinHash { get; set; }
         [Required(ErrorMessage = "pin confirmation is required")]
-        [Compare(nameof(Pin), ErrorMessage = "Pins doesn't match")]
-        public string? PinConfirmation { get; set; }
+        [Compare(nameof(PinHash), ErrorMessage = "Pins doesn't match")]
+        public string? PinHashConfirmation { get; set; }
     }
 
     public class DtoPin
     {
-        public string? Pin { get; set; }
+        public string? PinHash { get; set; }
     }
 
     public class DtoMsgResponse

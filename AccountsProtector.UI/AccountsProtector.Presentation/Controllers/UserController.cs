@@ -44,7 +44,12 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             }
 
             // if registration succeeded
-            return StatusCode(StatusCodes.Status201Created, new {messege = "success"});
+            var token = _jwtService.GenerateToken(user, null);
+            var response = new DtoRegisterResponse
+            {
+                Token = token
+            };
+            return StatusCode(StatusCodes.Status201Created, response);
         }
 
         [HttpPost]
@@ -77,7 +82,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Expiration = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration["JWT:EXPIRY_IN_DAYS"])),
-                IsPinSet = user.PinHash != null
+                PinHash = user.PinHash
             };
             return Ok(response);
         }

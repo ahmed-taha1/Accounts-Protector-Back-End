@@ -2,6 +2,7 @@
 using AccountsProtector.AccountsProtector.Core.Domain.UnitOfWorkContracts;
 using AccountsProtector.AccountsProtector.Core.Helpers;
 using AccountsProtector.AccountsProtector.Core.ServiceContracts;
+using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 
 namespace AccountsProtector.AccountsProtector.Core.Services
@@ -80,25 +81,23 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             return result.Succeeded;
         }
 
-        public async Task<bool> SetPinAsync(string pin, string userEmail)
+        public async Task<bool> SetPinAsync(string pinHash, string userEmail)
         {
-            User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
-            if (user != null && user.PinHash == null)
+            var user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
+            if (user != null && !string.IsNullOrEmpty(user.PinHash))
             {
-                user.PinHash = HashHelper.Hash(pin);
-                await _unitOfWork.SaveAsync();
+                user.PinHash = pinHash;
                 return true;
             }
             return false;
         }
 
-        public async Task<bool> CheckPinAsync(string pin, string userEmail)
+        public async Task<bool> CheckPinAsync(string pinHash, string userEmail)
         {
             User? user = await _unitOfWork.Users.FindByEmailAsync(userEmail);
             if (user != null && user.PinHash != null)
             {
-                String hashedPin = HashHelper.Hash(pin);
-                return user.PinHash == hashedPin;
+                return user.PinHash == pinHash;
             }
             return false;
         }

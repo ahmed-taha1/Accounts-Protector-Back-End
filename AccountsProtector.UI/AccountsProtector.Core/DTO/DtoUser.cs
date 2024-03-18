@@ -42,7 +42,12 @@ namespace AccountsProtector.AccountsProtector.Core.DTO
         public string? FirstName { get; set; } = string.Empty;
         public string? LastName { get; set; } = string.Empty;
         public DateTime? Expiration { get; set; }
-        public bool? IsPinSet { get; set; }
+        public String? PinHash { get; set; }
+    }
+
+    public class DtoRegisterResponse
+    {
+        public string? Token { get; set; } = string.Empty;
     }
 
     public class DtoChangePasswordRequest

@@ -26,9 +26,9 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
         {
             string token = Request.Headers["Authorization"]!;
             string userEmail = _jwtService.GetEmailFromToken(token)!;
-            if (await _userService.SetPinAsync(request.Pin!, userEmail))
+            if (await _userService.SetPinAsync(request.PinHash!, userEmail))
             {
-                return Ok(new DtoMsgResponse{Message = "pin has been set"});
+                return Ok(new DtoMsgResponse { Message = "pin has been set successfully" });
             }
             return BadRequest(new DtoErrorsResponse { errors = new List<string> { "user is not found or pin has been set before" } });
         }
@@ -40,7 +40,7 @@ namespace AccountsProtector.AccountsProtector.Presentation.Controllers
             string token = Request.Headers["Authorization"]!;
             string userEmail = _jwtService.GetEmailFromToken(token)!;
 
-            if (await _userService.CheckPinAsync(request.Pin!, userEmail))
+            if (await _userService.CheckPinAsync(request.PinHash!, userEmail))
             {
                 return Ok();
             }
