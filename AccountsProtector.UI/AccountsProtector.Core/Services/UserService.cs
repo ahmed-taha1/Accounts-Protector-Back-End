@@ -87,6 +87,7 @@ namespace AccountsProtector.AccountsProtector.Core.Services
             if (user != null && string.IsNullOrEmpty(user.PinHash))
             {
                 user.PinHash = pinHash;
+                await _unitOfWork.SaveAsync();
                 return true;
             }
             return false;
