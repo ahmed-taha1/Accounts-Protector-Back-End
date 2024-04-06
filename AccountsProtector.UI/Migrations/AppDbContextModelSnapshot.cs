@@ -4,19 +4,16 @@ using AccountsProtector.AccountsProtector.Infrastructure.AppDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AccountsProtector.Infrastructure.Migrations
+namespace AccountsProtector.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240209231339_OtpAdded")]
-    partial class OtpAdded
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +22,7 @@ namespace AccountsProtector.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.Account", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.Account", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +45,7 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.AccountAttribute", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.AccountAttribute", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,10 +56,10 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Key")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -76,7 +73,7 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.ToTable("AccountAttributes");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.OTP", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.OTP", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,24 +85,31 @@ namespace AccountsProtector.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("OTPCode")
+                        .HasMaxLength(10)
                         .HasColumnType("int");
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.HasKey("Id");
 
                     b.ToTable("OTPs");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.Platform", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.Platform", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IconColor")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PlatformName")
                         .IsRequired()
@@ -122,7 +126,7 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.ToTable("Platforms");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.User", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -142,6 +146,14 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -159,15 +171,15 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PersonName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("PinHash")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -323,9 +335,9 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.Account", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.Account", b =>
                 {
-                    b.HasOne("AccountsProtector.Core.Domain.Entities.Platform", "Platform")
+                    b.HasOne("AccountsProtector.AccountsProtector.Core.Domain.Entities.Platform", "Platform")
                         .WithMany("Accounts")
                         .HasForeignKey("PlatformId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -334,9 +346,9 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.Navigation("Platform");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.AccountAttribute", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.AccountAttribute", b =>
                 {
-                    b.HasOne("AccountsProtector.Core.Domain.Entities.Account", "Account")
+                    b.HasOne("AccountsProtector.AccountsProtector.Core.Domain.Entities.Account", "Account")
                         .WithMany("AccountAttributes")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -345,9 +357,9 @@ namespace AccountsProtector.Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.Platform", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.Platform", b =>
                 {
-                    b.HasOne("AccountsProtector.Core.Domain.Entities.User", "User")
+                    b.HasOne("AccountsProtector.AccountsProtector.Core.Domain.Entities.User", "User")
                         .WithMany("Platforms")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -367,7 +379,7 @@ namespace AccountsProtector.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("AccountsProtector.Core.Domain.Entities.User", null)
+                    b.HasOne("AccountsProtector.AccountsProtector.Core.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -376,7 +388,7 @@ namespace AccountsProtector.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("AccountsProtector.Core.Domain.Entities.User", null)
+                    b.HasOne("AccountsProtector.AccountsProtector.Core.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -391,7 +403,7 @@ namespace AccountsProtector.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AccountsProtector.Core.Domain.Entities.User", null)
+                    b.HasOne("AccountsProtector.AccountsProtector.Core.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -400,24 +412,24 @@ namespace AccountsProtector.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("AccountsProtector.Core.Domain.Entities.User", null)
+                    b.HasOne("AccountsProtector.AccountsProtector.Core.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.Account", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.Account", b =>
                 {
                     b.Navigation("AccountAttributes");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.Platform", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.Platform", b =>
                 {
                     b.Navigation("Accounts");
                 });
 
-            modelBuilder.Entity("AccountsProtector.Core.Domain.Entities.User", b =>
+            modelBuilder.Entity("AccountsProtector.AccountsProtector.Core.Domain.Entities.User", b =>
                 {
                     b.Navigation("Platforms");
                 });

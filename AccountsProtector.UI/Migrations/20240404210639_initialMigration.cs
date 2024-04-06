@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace AccountsProtector.Infrastructure.Migrations
+namespace AccountsProtector.Migrations
 {
     /// <inheritdoc />
-    public partial class modelsCreated : Migration
+    public partial class initialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,6 +30,9 @@ namespace AccountsProtector.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PinHash = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -48,6 +51,21 @@ namespace AccountsProtector.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OTPs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserEmail = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OTPCode = table.Column<int>(type: "int", maxLength: 10, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OTPs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -163,6 +181,7 @@ namespace AccountsProtector.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PlatformName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IconColor = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -202,7 +221,7 @@ namespace AccountsProtector.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Key = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     AccountId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -292,6 +311,9 @@ namespace AccountsProtector.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "OTPs");
 
             migrationBuilder.DropTable(
                 name: "Accounts");

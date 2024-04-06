@@ -125,27 +125,15 @@ namespace AccountsProtector.AccountsProtector.Core.Services
 
                     if (request.AccountFields != null)
                     {
+                        account.AccountAttributes!.Clear();
                         foreach (var field in request.AccountFields)
                         {
-                            bool isFieldExist = false;
-                            foreach (var accountAttribute in account.AccountAttributes!)
+                            account.AccountAttributes!.Add(new AccountAttribute
                             {
-                                if (EncryptionHelper.Decrypt(accountAttribute.Key!) == field.Key)
-                                {
-                                    isFieldExist = true;
-                                    accountAttribute.Value = EncryptionHelper.Encrypt(field.Value);
-                                }
-                            }
-
-                            if (!isFieldExist)
-                            {
-                                account.AccountAttributes!.Add(new AccountAttribute
-                                {
-                                    AccountId = account.Id,
-                                    Key = EncryptionHelper.Encrypt(field.Key),
-                                    Value = EncryptionHelper.Encrypt(field.Value)
-                                });
-                            }
+                                AccountId = account.Id,
+                                Key = EncryptionHelper.Encrypt(field.Key),
+                                Value = EncryptionHelper.Encrypt(field.Value)
+                            });
                         }
                     }
                     await _unitOfWork.SaveAsync();
